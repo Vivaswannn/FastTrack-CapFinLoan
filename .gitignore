@@ -1,0 +1,48 @@
+# .NET
+**/bin/
+**/obj/
+**/TestResults/
+*.user
+*.suo
+.vs/
+
+# Environment secrets
+.env
+**/appsettings.Production.json
+**/appsettings.Development.json
+
+# Temp / dev-only files
+claude_instructions.md
+claude_pagination_plan.md
+claude_testing_plan.md
+testing_instructions.md
+patch_qos.py
+run_local_test.ps1
+temp_output.txt
+test_blocked_login.cjs
+test_deact.js
+
+# Logs
+**/logs/
+
+# Node
+**/node_modules/
+**/dist/
+
+# Uploads (user files should not be in git)
+**/wwwroot/uploads/*
+!**/wwwroot/uploads/.gitkeep
+
+# Coverage
+**/coverage/
+**/TestResults/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+.claude/
+
+# Docker
+*.override.yml

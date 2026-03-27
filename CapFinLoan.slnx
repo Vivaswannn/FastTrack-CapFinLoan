@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/Backend/" />
+  <Folder Name="/Backend/ApiGateway/">
+    <Project Path="Backend/ApiGateway/CapFinLoan.Gateway/CapFinLoan.Gateway.csproj" />
+  </Folder>
+  <Folder Name="/Backend/Services/">
+    <Project Path="Backend/Services/CapFinLoan.AdminService/CapFinLoan.AdminService.csproj" />
+    <Project Path="Backend/Services/CapFinLoan.ApplicationService/CapFinLoan.ApplicationService.csproj" />
+    <Project Path="Backend/Services/CapFinLoan.AuthService/CapFinLoan.AuthService.csproj" />
+    <Project Path="Backend/Services/CapFinLoan.DocumentService/CapFinLoan.DocumentService.csproj" />
+  </Folder>
+  <Folder Name="/Backend/SharedKernel/">
+    <Project Path="Backend/SharedKernel/CapFinLoan.SharedKernel/CapFinLoan.SharedKernel.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,6 @@
+@CapFinLoan.Gateway_HostAddress = http://localhost:5259
+
+GET {{CapFinLoan.Gateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

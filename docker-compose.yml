@@ -1,0 +1,308 @@
+version: '3.8'
+
+services:
+
+  # ── Infrastructure ─────────────────────────────────────────
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: capfinloan-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "${SA_PASSWORD}"
+      MSSQL_PID: Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - capfinloan-network
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.5'
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd",
+             "-S", "localhost",
+             "-U", "sa",
+             "-P", "${SA_PASSWORD}",
+             "-C",
+             "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: capfinloan-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_USERNAME}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD}"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - capfinloan-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: capfinloan-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - capfinloan-network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    command: redis-server --appendonly yes
+
+  # ── Backend Services ────────────────────────────────────────
+
+  auth-service:
+    build:
+      context: ./Backend
+      dockerfile: Services/CapFinLoan.AuthService/Dockerfile
+    container_name: capfinloan-auth
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: "http://+:5001"
+      ConnectionStrings__DefaultConnection: >-
+        Server=sqlserver,1433;Database=CapFinLoan_Auth;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;
+      JwtSettings__SecretKey: "${JWT_SECRET}"
+      JwtSettings__Issuer: "${JWT_ISSUER}"
+      JwtSettings__Audience: "${JWT_AUDIENCE}"
+      JwtSettings__ExpiryMinutes: "${JWT_EXPIRY_MINUTES}"
+    ports:
+      - "5001:5001"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - capfinloan-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f",
+             "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  application-service:
+    build:
+      context: ./Backend
+      dockerfile: Services/CapFinLoan.ApplicationService/Dockerfile
+    container_name: capfinloan-application
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: "http://+:5002"
+      ConnectionStrings__DefaultConnection: >-
+        Server=sqlserver,1433;Database=CapFinLoan_Loan;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;
+      JwtSettings__SecretKey: "${JWT_SECRET}"
+      JwtSettings__Issuer: "${JWT_ISSUER}"
+      JwtSettings__Audience: "${JWT_AUDIENCE}"
+      RabbitMQ__Host: "${RABBITMQ_HOST}"
+      RabbitMQ__Port: "${RABBITMQ_PORT}"
+      RabbitMQ__Username: "${RABBITMQ_USERNAME}"
+      RabbitMQ__Password: "${RABBITMQ_PASSWORD}"
+    ports:
+      - "5002:5002"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - capfinloan-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    restart: unless-stopped
+
+  document-service:
+    build:
+      context: ./Backend
+      dockerfile: Services/CapFinLoan.DocumentService/Dockerfile
+    container_name: capfinloan-document
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: "http://+:5003"
+      ConnectionStrings__DefaultConnection: >-
+        Server=sqlserver,1433;Database=CapFinLoan_Document;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;
+      JwtSettings__SecretKey: "${JWT_SECRET}"
+      JwtSettings__Issuer: "${JWT_ISSUER}"
+      JwtSettings__Audience: "${JWT_AUDIENCE}"
+    ports:
+      - "5003:5003"
+    volumes:
+      - document_uploads:/app/wwwroot/uploads
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - capfinloan-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    restart: unless-stopped
+
+  admin-service:
+    build:
+      context: ./Backend
+      dockerfile: Services/CapFinLoan.AdminService/Dockerfile
+    container_name: capfinloan-admin
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: "http://+:5004"
+      ConnectionStrings__DefaultConnection: >-
+        Server=sqlserver,1433;Database=CapFinLoan_Admin;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;
+      ConnectionStrings__Redis: "${REDIS_HOST}:${REDIS_PORT}"
+      JwtSettings__SecretKey: "${JWT_SECRET}"
+      JwtSettings__Issuer: "${JWT_ISSUER}"
+      JwtSettings__Audience: "${JWT_AUDIENCE}"
+      ServiceUrls__ApplicationService: "http://application-service:5002"
+    ports:
+      - "5004:5004"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - capfinloan-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: ./Backend
+      dockerfile: Services/CapFinLoan.NotificationService/Dockerfile
+    container_name: capfinloan-notification
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: "http://+:5005"
+      RabbitMQ__Host: "${RABBITMQ_HOST}"
+      RabbitMQ__Port: "${RABBITMQ_PORT}"
+      RabbitMQ__Username: "${RABBITMQ_USERNAME}"
+      RabbitMQ__Password: "${RABBITMQ_PASSWORD}"
+    ports:
+      - "5005:5005"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - capfinloan-network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+    restart: unless-stopped
+
+  payment-service:
+    build:
+      context: ./Backend
+      dockerfile: Services/CapFinLoan.PaymentService/Dockerfile
+    container_name: capfinloan-payment
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: "http://+:5006"
+      ConnectionStrings__DefaultConnection: >-
+        Server=sqlserver,1433;Database=CapFinLoan_Payment;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;
+      JwtSettings__SecretKey: "${JWT_SECRET}"
+      JwtSettings__Issuer: "${JWT_ISSUER}"
+      JwtSettings__Audience: "${JWT_AUDIENCE}"
+      RabbitMQ__Host: "${RABBITMQ_HOST}"
+      RabbitMQ__Port: "${RABBITMQ_PORT}"
+      RabbitMQ__Username: "${RABBITMQ_USERNAME}"
+      RabbitMQ__Password: "${RABBITMQ_PASSWORD}"
+    ports:
+      - "5006:5006"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - capfinloan-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    restart: unless-stopped
+
+  gateway:
+    build:
+      context: ./Backend
+      dockerfile: ApiGateway/CapFinLoan.Gateway/Dockerfile
+    container_name: capfinloan-gateway
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: "http://+:5000"
+      JwtSettings__SecretKey: "${JWT_SECRET}"
+      JwtSettings__Issuer: "${JWT_ISSUER}"
+      JwtSettings__Audience: "${JWT_AUDIENCE}"
+    ports:
+      - "5000:5000"
+    depends_on:
+      - auth-service
+      - application-service
+      - document-service
+      - admin-service
+      - payment-service
+    networks:
+      - capfinloan-network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+    restart: unless-stopped
+
+# ── Volumes ──────────────────────────────────────────────────
+volumes:
+  sqlserver_data:
+  rabbitmq_data:
+  redis_data:
+  document_uploads:
+
+# ── Network ──────────────────────────────────────────────────
+networks:
+  capfinloan-network:
+    driver: bridge

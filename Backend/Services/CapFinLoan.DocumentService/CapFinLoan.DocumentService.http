@@ -1,0 +1,6 @@
+@CapFinLoan.DocumentService_HostAddress = http://localhost:5296
+
+GET {{CapFinLoan.DocumentService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

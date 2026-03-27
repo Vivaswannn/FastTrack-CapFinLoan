@@ -1,0 +1,31 @@
+﻿  Determining projects to restore...
+  All projects are up-to-date for restore.
+  CapFinLoan.SharedKernel -> D:\CapFinLoan\CapFinLoan\Backend\SharedKernel\CapFinLoan.SharedKernel\bin\Debug\net10.0\CapFinLoan.SharedKernel.dll
+  CapFinLoan.ApplicationService -> D:\CapFinLoan\CapFinLoan\Backend\Services\CapFinLoan.ApplicationService\bin\Debug\net10.0\CapFinLoan.ApplicationService.dll
+  CapFinLoan.ApplicationService.Tests -> D:\CapFinLoan\CapFinLoan\Backend\Services\CapFinLoan.ApplicationService.Tests\bin\Debug\net10.0\CapFinLoan.ApplicationService.Tests.dll
+Test run for D:\CapFinLoan\CapFinLoan\Backend\Services\CapFinLoan.ApplicationService.Tests\bin\Debug\net10.0\CapFinLoan.ApplicationService.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed UpdateStatusAsync_SuccessfulTransition_PublishesEventExactlyOnce [28 ms]
+  Error Message:
+   Moq.MockException : PublishLoanStatusChangedAsync should be called exactly once on successful status update
+Expected invocation on the mock once, but was 0 times: p => p.PublishLoanStatusChangedAsync(It.Is<LoanStatusChangedEvent>(e => ((e.ApplicationId == LoanApplicationServiceTests.TestAppId && e.OldStatus == "Submitted") && e.NewStatus == "DocsPending") && e.ApplicantEmail == "applicant@test.com"))
+
+Performed invocations:
+
+   Mock<IMessagePublisher:49> (p):
+   No invocations performed.
+
+  Stack Trace:
+     at Moq.Mock.Verify(Mock mock, LambdaExpression expression, Times times, String failMessage) in /_/src/Moq/Mock.cs:line 332
+   at Moq.Mock`1.Verify[TResult](Expression`1 expression, Func`1 times, String failMessage) in /_/src/Moq/Mock`1.cs:line 856
+   at CapFinLoan.ApplicationService.Tests.LoanApplicationServiceTests.UpdateStatusAsync_SuccessfulTransition_PublishesEventExactlyOnce() in D:\CapFinLoan\CapFinLoan\Backend\Services\CapFinLoan.ApplicationService.Tests\LoanApplicationServiceTests.cs:line 798
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.GetResult()
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](TestExecutionContext context, Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(TestExecutionContext context, Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.BeforeAndAfterTestCommand.<>c__DisplayClass1_0.<Execute>b__0()
+   at NUnit.Framework.Internal.Commands.DelegatingTestCommand.RunTestMethodInThreadAbortSafeZone(TestExecutionContext context, Action action)
+
+
+Failed!  - Failed:     1, Passed:    50, Skipped:     0, Total:    51, Duration: 630 ms - CapFinLoan.ApplicationService.Tests.dll (net10.0)

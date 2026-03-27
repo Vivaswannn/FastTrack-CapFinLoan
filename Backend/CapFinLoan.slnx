@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/ApiGateway/">
+    <Project Path="ApiGateway/CapFinLoan.Gateway/CapFinLoan.Gateway.csproj" />
+  </Folder>
+  <Folder Name="/Services/">
+    <Project Path="Services/CapFinLoan.AdminService.Tests/CapFinLoan.AdminService.Tests.csproj" />
+    <Project Path="Services/CapFinLoan.AdminService/CapFinLoan.AdminService.csproj" />
+    <Project Path="Services/CapFinLoan.ApplicationService.Tests/CapFinLoan.ApplicationService.Tests.csproj" />
+    <Project Path="Services/CapFinLoan.ApplicationService/CapFinLoan.ApplicationService.csproj" />
+    <Project Path="Services/CapFinLoan.AuthService.Tests/CapFinLoan.AuthService.Tests.csproj" />
+    <Project Path="Services/CapFinLoan.AuthService/CapFinLoan.AuthService.csproj" />
+    <Project Path="Services/CapFinLoan.DocumentService.Tests/CapFinLoan.DocumentService.Tests.csproj" />
+    <Project Path="Services/CapFinLoan.DocumentService/CapFinLoan.DocumentService.csproj" />
+    <Project Path="Services/CapFinLoan.NotificationService/CapFinLoan.NotificationService.csproj" />
+    <Project Path="Services/CapFinLoan.PaymentService/CapFinLoan.PaymentService.csproj" />
+    <Project Path="Services/CapFinLoan.PaymentService.Tests/CapFinLoan.PaymentService.Tests.csproj" />
+  </Folder>
+  <Folder Name="/SharedKernel/">
+    <Project Path="SharedKernel/CapFinLoan.SharedKernel/CapFinLoan.SharedKernel.csproj" />
+  </Folder>
+</Solution>
