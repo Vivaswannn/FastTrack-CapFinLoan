@@ -10,6 +10,8 @@
 .env
 **/appsettings.Production.json
 **/appsettings.Development.json
+**/appsettings.Local.json
+*.slnLaunch
 
 # Temp / dev-only files
 claude_instructions.md
