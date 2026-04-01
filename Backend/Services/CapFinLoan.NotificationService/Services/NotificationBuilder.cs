@@ -72,6 +72,17 @@ namespace CapFinLoan.NotificationService.Services
                     $"<p>Your loan application has been <strong>closed</strong>.</p>" +
                     $"<p>Thank you for choosing CapFinLoan.</p>"
                 ),
+                "DocumentRejected" => (
+                    "Action Required: Document Rejected — CapFinLoan",
+                    $"<p>One of your uploaded documents has been <span style=\"color:#dc3545;font-weight:bold;\">rejected</span> " +
+                    $"by our verification team.</p>" +
+                    $"<div style=\"background:#f8d7da;border-left:4px solid #dc3545;padding:12px 16px;margin:16px 0;border-radius:4px;\">" +
+                    $"<strong>Document:</strong> {evt.LoanType}<br/>" +
+                    $"<strong>Reason:</strong> {evt.Remarks}</div>" +
+                    $"<p>Please <a href=\"#\" style=\"color:#1a73e8;\">login to CapFinLoan</a> " +
+                    $"and re-upload a corrected document at your earliest convenience.</p>" +
+                    $"<p>Your application status remains <strong>Docs Pending</strong> until all documents are verified.</p>"
+                ),
                 _ => (string.Empty, string.Empty)
             };
 

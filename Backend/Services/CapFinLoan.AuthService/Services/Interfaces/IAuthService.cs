@@ -29,6 +29,17 @@ namespace CapFinLoan.AuthService.Services.Interfaces
         Task<AuthResponseDto> VerifyOtpAsync(VerifyOtpDto dto);
 
         /// <summary>
+        /// Send an OTP to the given email for password reset.
+        /// Always returns success — does not reveal if email exists.
+        /// </summary>
+        Task ForgotPasswordAsync(ForgotPasswordDto dto);
+
+        /// <summary>
+        /// Verify the OTP and set a new password for the account.
+        /// </summary>
+        Task ResetPasswordAsync(ResetPasswordDto dto);
+
+        /// <summary>
         /// Get profile of currently logged in user.
         /// </summary>
         Task<UserResponseDto> GetProfileAsync(Guid userId);

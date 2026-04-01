@@ -1,0 +1,177 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- Title -->
+    <mxCell id="title" value="CapFinLoan — High Level Architecture Diagram" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#1a237e;" vertex="1" parent="1">
+      <mxGeometry x="327" y="20" width="1000" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="subtitle" value="ASP.NET Core .NET 10 Microservices · React Vite · SQL Server · RabbitMQ · Redis" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#546e7a;" vertex="1" parent="1">
+      <mxGeometry x="327" y="58" width="1000" height="24" as="geometry"/>
+    </mxCell>
+
+    <!-- React Frontend -->
+    <mxCell id="frontend" value="&lt;b&gt;React Frontend&lt;/b&gt;&lt;br/&gt;Port 5173&lt;br/&gt;Vite + Tailwind + Recharts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1565c0;fontColor=#0d47a1;fontSize=12;arcSize=10;" vertex="1" parent="1">
+      <mxGeometry x="577" y="100" width="500" height="60" as="geometry"/>
+    </mxCell>
+
+    <!-- Arrow frontend to gateway -->
+    <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#1565c0;strokeWidth=2;" edge="1" source="frontend" target="gateway" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Ocelot Gateway -->
+    <mxCell id="gateway" value="&lt;b&gt;Ocelot API Gateway&lt;/b&gt;&lt;br/&gt;Port 5000&lt;br/&gt;JWT Validation · Rate Limiting · Route Forwarding" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;fontColor=#b71c1c;fontSize=12;arcSize=10;" vertex="1" parent="1">
+      <mxGeometry x="527" y="230" width="600" height="60" as="geometry"/>
+    </mxCell>
+
+    <!-- Services Row -->
+    <!-- AuthService -->
+    <mxCell id="auth" value="&lt;b&gt;AuthService&lt;/b&gt;&lt;br/&gt;Port 5001&lt;br/&gt;JWT · BCrypt&lt;br/&gt;OTP · Register/Login" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;fontColor=#1b5e20;fontSize=11;arcSize=10;" vertex="1" parent="1">
+      <mxGeometry x="60" y="380" width="160" height="90" as="geometry"/>
+    </mxCell>
+
+    <!-- ApplicationService -->
+    <mxCell id="appservice" value="&lt;b&gt;ApplicationService&lt;/b&gt;&lt;br/&gt;Port 5002&lt;br/&gt;Loan Lifecycle&lt;br/&gt;Status Transitions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;fontColor=#1b5e20;fontSize=11;arcSize=10;" vertex="1" parent="1">
+      <mxGeometry x="260" y="380" width="160" height="90" as="geometry"/>
+    </mxCell>
+
+    <!-- DocumentService -->
+    <mxCell id="docservice" value="&lt;b&gt;DocumentService&lt;/b&gt;&lt;br/&gt;Port 5003&lt;br/&gt;KYC Upload&lt;br/&gt;File Verification" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;fontColor=#1b5e20;fontSize=11;arcSize=10;" vertex="1" parent="1">
+      <mxGeometry x="460" y="380" width="160" height="90" as="geometry"/>
+    </mxCell>
+
+    <!-- AdminService -->
+    <mxCell id="adminservice" value="&lt;b&gt;AdminService&lt;/b&gt;&lt;br/&gt;Port 5004&lt;br/&gt;Decisions · Reports&lt;br/&gt;Redis Cached" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;fontColor=#1b5e20;fontSize=11;arcSize=10;" vertex="1" parent="1">
+      <mxGeometry x="660" y="380" width="160" height="90" as="geometry"/>
+    </mxCell>
+
+    <!-- NotificationService -->
+    <mxCell id="notifservice" value="&lt;b&gt;NotificationService&lt;/b&gt;&lt;br/&gt;Port 5005&lt;br/&gt;RabbitMQ Consumer&lt;br/&gt;Email via MailKit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;fontColor=#1b5e20;fontSize=11;arcSize=10;" vertex="1" parent="1">
+      <mxGeometry x="860" y="380" width="160" height="90" as="geometry"/>
+    </mxCell>
+
+    <!-- PaymentService -->
+    <mxCell id="payservice" value="&lt;b&gt;PaymentService&lt;/b&gt;&lt;br/&gt;Port 5006&lt;br/&gt;Saga Pattern&lt;br/&gt;Disbursement" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;fontColor=#1b5e20;fontSize=11;arcSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1060" y="380" width="160" height="90" as="geometry"/>
+    </mxCell>
+
+    <!-- Gateway to services edges -->
+    <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#388e3c;strokeWidth=1.5;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" source="gateway" target="auth" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#388e3c;strokeWidth=1.5;" edge="1" source="gateway" target="appservice" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#388e3c;strokeWidth=1.5;" edge="1" source="gateway" target="docservice" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#388e3c;strokeWidth=1.5;" edge="1" source="gateway" target="adminservice" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#388e3c;strokeWidth=1.5;" edge="1" source="gateway" target="notifservice" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#388e3c;strokeWidth=1.5;" edge="1" source="gateway" target="payservice" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Databases -->
+    <mxCell id="db_auth" value="&lt;b&gt;CapFinLoan_Auth&lt;/b&gt;&lt;br/&gt;auth.Users" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#fff9c4;strokeColor=#f57f17;fontColor=#e65100;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="70" y="550" width="140" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="db_loan" value="&lt;b&gt;CapFinLoan_Loan&lt;/b&gt;&lt;br/&gt;core.LoanApplications" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#fff9c4;strokeColor=#f57f17;fontColor=#e65100;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="265" y="550" width="150" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="db_doc" value="&lt;b&gt;CapFinLoan_Doc&lt;/b&gt;&lt;br/&gt;docs.Documents" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#fff9c4;strokeColor=#f57f17;fontColor=#e65100;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="465" y="550" width="150" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="db_admin" value="&lt;b&gt;CapFinLoan_Admin&lt;/b&gt;&lt;br/&gt;admin.Decisions" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#fff9c4;strokeColor=#f57f17;fontColor=#e65100;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="665" y="550" width="150" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="db_pay" value="&lt;b&gt;CapFinLoan_Payment&lt;/b&gt;&lt;br/&gt;pay.Payments" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#fff9c4;strokeColor=#f57f17;fontColor=#e65100;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1065" y="550" width="150" height="60" as="geometry"/>
+    </mxCell>
+
+    <!-- Service to DB edges -->
+    <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#f57f17;strokeWidth=1.5;" edge="1" source="auth" target="db_auth" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#f57f17;strokeWidth=1.5;" edge="1" source="appservice" target="db_loan" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#f57f17;strokeWidth=1.5;" edge="1" source="docservice" target="db_doc" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#f57f17;strokeWidth=1.5;" edge="1" source="adminservice" target="db_admin" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#f57f17;strokeWidth=1.5;" edge="1" source="payservice" target="db_pay" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- RabbitMQ -->
+    <mxCell id="rabbitmq" value="&lt;b&gt;RabbitMQ&lt;/b&gt;&lt;br/&gt;Port 5672 · UI 15672&lt;br/&gt;loan.status.changed&lt;br/&gt;loan.approved" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#ad1457;fontColor=#880e4f;fontSize=11;arcSize=50;" vertex="1" parent="1">
+      <mxGeometry x="1290" y="380" width="160" height="90" as="geometry"/>
+    </mxCell>
+
+    <!-- Redis -->
+    <mxCell id="redis" value="&lt;b&gt;Redis Cache&lt;/b&gt;&lt;br/&gt;Port 6379&lt;br/&gt;dashboard:stats (5m)&lt;br/&gt;report:summary (10m)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#ad1457;fontColor=#880e4f;fontSize=11;arcSize=50;" vertex="1" parent="1">
+      <mxGeometry x="1290" y="500" width="160" height="90" as="geometry"/>
+    </mxCell>
+
+    <!-- RabbitMQ connections -->
+    <mxCell id="e13" value="publish&lt;br/&gt;LoanStatusChangedEvent" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#ad1457;strokeWidth=1.5;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="appservice" target="rabbitmq" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e14" value="consume" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#ad1457;strokeWidth=1.5;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="rabbitmq" target="notifservice" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e15" value="publish LoanApprovedEvent" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#ad1457;strokeWidth=1.5;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="appservice" target="payservice" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e16" value="cache hit/miss" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#ad1457;strokeWidth=1.5;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="adminservice" target="redis" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Legend -->
+    <mxCell id="legend_box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#bdbdbd;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="60" y="660" width="360" height="120" as="geometry"/>
+    </mxCell>
+    <mxCell id="legend_title" value="&lt;b&gt;Legend&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="80" y="668" width="100" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg1" value="" style="rounded=1;fillColor=#e3f2fd;strokeColor=#1565c0;" vertex="1" parent="1">
+      <mxGeometry x="80" y="695" width="20" height="14" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg1t" value="Frontend" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="108" y="693" width="100" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg2" value="" style="rounded=1;fillColor=#fce4ec;strokeColor=#c62828;" vertex="1" parent="1">
+      <mxGeometry x="80" y="717" width="20" height="14" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg2t" value="API Gateway" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="108" y="715" width="100" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg3" value="" style="rounded=1;fillColor=#e8f5e9;strokeColor=#2e7d32;" vertex="1" parent="1">
+      <mxGeometry x="220" y="695" width="20" height="14" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg3t" value="Microservices" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="248" y="693" width="120" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg4" value="" style="rounded=1;fillColor=#fff9c4;strokeColor=#f57f17;" vertex="1" parent="1">
+      <mxGeometry x="220" y="717" width="20" height="14" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg4t" value="Databases (SQL Server)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="248" y="715" width="160" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg5" value="" style="rounded=1;fillColor=#fce4ec;strokeColor=#ad1457;" vertex="1" parent="1">
+      <mxGeometry x="80" y="739" width="20" height="14" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg5t" value="Messaging / Cache (RabbitMQ, Redis)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="108" y="737" width="220" height="18" as="geometry"/>
+    </mxCell>
+
+  </root>
+</mxGraphModel>

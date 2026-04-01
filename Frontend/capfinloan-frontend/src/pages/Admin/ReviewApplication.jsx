@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { CheckCircle2, XCircle, Download } from 'lucide-react';
 import PageLayout from '../../components/layout/PageLayout';
 import StatusBadge from '../../components/common/StatusBadge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -113,9 +114,13 @@ export default function ReviewApplication() {
     }
     setVerifying(p => ({ ...p, [docId]: true }));
     try {
+      const doc = docs.find(d => d.documentId === docId);
       await documentService.verifyDocument(docId, {
         isVerified,
         verificationRemarks: remarks,
+        applicantEmail: app?.email,
+        applicantName:  app?.fullName,
+        documentType:   doc?.documentType?.replace(/([A-Z])/g, ' $1').trim(),
       });
       toast.success(isVerified ? 'Document verified!' : 'Document rejected');
       fetchAll();
@@ -174,7 +179,13 @@ export default function ReviewApplication() {
     Number(decisionForm.tenureMonths)
   );
 
-  const validNextStatuses = app ? VALID_TRANSITIONS[app.status] || [] : [];
+  const hasRejectedDocs = docs.some(d => !d.isVerified && d.verificationRemarks);
+
+  const validNextStatuses = app
+    ? (VALID_TRANSITIONS[app.status] || []).filter(s =>
+        s === 'DocsVerified' && hasRejectedDocs ? false : true
+      )
+    : [];
 
   if (loading) return <PageLayout title="Review Application"><LoadingSpinner /></PageLayout>;
   if (!app) return <PageLayout title="Not Found"><p className="text-gray-500">Application not found.</p></PageLayout>;
@@ -266,9 +277,9 @@ export default function ReviewApplication() {
                       <div className="text-xs text-gray-400 mt-0.5">{doc.fileName}</div>
                     </div>
                     {doc.isVerified ? (
-                      <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">✓ Verified</span>
+                      <span className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full"><CheckCircle2 size={11} /> Verified</span>
                     ) : doc.verificationRemarks ? (
-                      <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">✗ Rejected</span>
+                      <span className="inline-flex items-center gap-1 text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full"><XCircle size={11} /> Rejected</span>
                     ) : (
                       <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">Pending</span>
                     )}
@@ -282,8 +293,8 @@ export default function ReviewApplication() {
 
                   <div className="flex gap-2 mt-3">
                     <button onClick={() => handleDownload(doc)}
-                      className="text-xs text-primary-600 hover:underline">
-                      Download
+                      className="inline-flex items-center gap-1 text-xs text-primary-600 hover:underline">
+                      <Download size={12} /> Download
                     </button>
                     {!doc.isVerified && (
                       <>
@@ -327,6 +338,22 @@ export default function ReviewApplication() {
               <span className="text-sm text-gray-500">{formatDate(app.submittedAt)}</span>
             </div>
           </div>
+
+          {/* Rejected docs — status stays DocsPending */}
+          {hasRejectedDocs && app.status === 'DocsPending' && (
+            <div className="card border border-amber-200 bg-amber-50">
+              <div className="flex items-start gap-3">
+                <XCircle size={18} className="text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-semibold text-amber-800">Documents Rejected</p>
+                  <p className="text-xs text-amber-700 mt-1">
+                    Status remains <strong>Docs Pending</strong>. The applicant will see the rejection
+                    reasons and can re-upload corrected documents.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Update Status */}
           {validNextStatuses.length > 0 && !decision && (
@@ -374,7 +401,9 @@ export default function ReviewApplication() {
                       decisionType === type
                         ? type === 'Approved' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
                         : 'bg-white text-gray-600'}`}>
-                    {type === 'Approved' ? '✅ Approve' : '❌ Reject'}
+                    {type === 'Approved'
+                      ? <span className="flex items-center justify-center gap-1.5"><CheckCircle2 size={14} /> Approve</span>
+                      : <span className="flex items-center justify-center gap-1.5"><XCircle size={14} /> Reject</span>}
                   </button>
                 ))}
               </div>
@@ -462,8 +491,10 @@ export default function ReviewApplication() {
             <div className={`card border-l-4 ${decision.decisionType === 'Approved' ? 'border-green-500' : 'border-red-500'}`}>
               <h3 className="font-semibold text-gray-900 mb-3">Decision Made</h3>
               <div className="space-y-2 text-sm">
-                <div className={`text-lg font-bold ${decision.decisionType === 'Approved' ? 'text-green-700' : 'text-red-700'}`}>
-                  {decision.decisionType === 'Approved' ? '✅ Approved' : '❌ Rejected'}
+                <div className={`flex items-center gap-2 text-lg font-bold ${decision.decisionType === 'Approved' ? 'text-green-700' : 'text-red-700'}`}>
+                  {decision.decisionType === 'Approved'
+                    ? <><CheckCircle2 size={18} /> Approved</>
+                    : <><XCircle size={18} /> Rejected</>}
                 </div>
                 {decision.decisionType === 'Approved' && (
                   <>

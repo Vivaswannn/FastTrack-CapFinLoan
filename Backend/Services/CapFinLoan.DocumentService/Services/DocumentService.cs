@@ -1,9 +1,11 @@
 using CapFinLoan.DocumentService.DTOs.Requests;
 using CapFinLoan.DocumentService.DTOs.Responses;
 using CapFinLoan.DocumentService.Helpers;
+using CapFinLoan.DocumentService.Messaging;
 using CapFinLoan.DocumentService.Models;
 using CapFinLoan.DocumentService.Repositories.Interfaces;
 using CapFinLoan.DocumentService.Services.Interfaces;
+using CapFinLoan.SharedKernel.Events;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -19,15 +21,18 @@ namespace CapFinLoan.DocumentService.Services
         private readonly IDocumentRepository _repository;
         private readonly IWebHostEnvironment _environment;
         private readonly ILogger<DocumentService> _logger;
+        private readonly IMessagePublisher _publisher;
 
         public DocumentService(
             IDocumentRepository repository,
             IWebHostEnvironment environment,
-            ILogger<DocumentService> logger)
+            ILogger<DocumentService> logger,
+            IMessagePublisher publisher)
         {
-            _repository = repository;
+            _repository  = repository;
             _environment = environment;
-            _logger = logger;
+            _logger      = logger;
+            _publisher   = publisher;
         }
 
         /// <inheritdoc/>
@@ -181,6 +186,24 @@ namespace CapFinLoan.DocumentService.Services
             _logger.LogInformation(
                 "Document {DocumentId} verified={IsVerified} by {AdminEmail}",
                 documentId, dto.IsVerified, adminEmail);
+
+            // Notify applicant by email when a document is rejected
+            if (!dto.IsVerified
+                && !string.IsNullOrEmpty(dto.ApplicantEmail)
+                && !string.IsNullOrEmpty(dto.ApplicantName))
+            {
+                await _publisher.PublishLoanStatusChangedAsync(new LoanStatusChangedEvent
+                {
+                    ApplicationId  = document.ApplicationId,
+                    UserId         = document.UserId,
+                    ApplicantEmail = dto.ApplicantEmail,
+                    ApplicantName  = dto.ApplicantName,
+                    OldStatus      = "DocsPending",
+                    NewStatus      = "DocumentRejected",
+                    Remarks        = dto.VerificationRemarks ?? string.Empty,
+                    LoanType       = dto.DocumentType ?? "Document",
+                });
+            }
 
             return MapToResponseDto(updated);
         }

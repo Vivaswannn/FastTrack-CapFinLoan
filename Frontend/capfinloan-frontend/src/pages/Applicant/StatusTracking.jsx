@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { CheckCircle2, XCircle } from 'lucide-react';
 import PageLayout from '../../components/layout/PageLayout';
 import StatusBadge from '../../components/common/StatusBadge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -112,7 +113,9 @@ export default function StatusTracking() {
           {decision && (
             <div className={`card border-l-4 ${decision.decisionType === 'Approved' ? 'border-green-500' : 'border-red-500'}`}>
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">{decision.decisionType === 'Approved' ? '🎉' : '❌'}</span>
+                {decision.decisionType === 'Approved'
+                  ? <CheckCircle2 size={22} className="text-green-500" />
+                  : <XCircle size={22} className="text-red-500" />}
                 <h2 className="font-semibold text-gray-900">Loan {decision.decisionType}</h2>
               </div>
               {decision.decisionType === 'Approved' ? (

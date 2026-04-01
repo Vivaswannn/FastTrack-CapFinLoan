@@ -1,0 +1,148 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- Title -->
+    <mxCell id="title" value="CapFinLoan — Loan Application Submission: Sequence Diagram" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#1a237e;" vertex="1" parent="1">
+      <mxGeometry x="100" y="20" width="1400" height="36" as="geometry"/>
+    </mxCell>
+
+    <!-- Lifeline Headers -->
+    <mxCell id="p1" value="&lt;b&gt;Applicant&lt;/b&gt;&lt;br/&gt;(Browser)" style="shape=mxgraph.uml.actor;fillColor=#dae8fc;strokeColor=#1565c0;fontColor=#0d47a1;fontSize=11;labelPosition=bottom;align=center;verticalLabelPosition=bottom;" vertex="1" parent="1">
+      <mxGeometry x="80" y="80" width="40" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="p2" value="&lt;b&gt;React Frontend&lt;/b&gt;&lt;br/&gt;:5173" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1565c0;fontColor=#0d47a1;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="240" y="80" width="140" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="p3" value="&lt;b&gt;Ocelot Gateway&lt;/b&gt;&lt;br/&gt;:5000" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;fontColor=#b71c1c;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="450" y="80" width="140" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="p4" value="&lt;b&gt;ApplicationService&lt;/b&gt;&lt;br/&gt;:5002" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;fontColor=#1b5e20;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="660" y="80" width="140" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="p5" value="&lt;b&gt;LoanDB&lt;/b&gt;&lt;br/&gt;SQL Server" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#fff9c4;strokeColor=#f57f17;fontColor=#e65100;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="870" y="80" width="120" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="p6" value="&lt;b&gt;RabbitMQ&lt;/b&gt;&lt;br/&gt;Exchange" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#7b1fa2;fontColor=#4a148c;fontSize=11;arcSize=50;" vertex="1" parent="1">
+      <mxGeometry x="1060" y="80" width="140" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="p7" value="&lt;b&gt;NotificationService&lt;/b&gt;&lt;br/&gt;:5005" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;fontColor=#1b5e20;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1270" y="80" width="140" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- Lifelines (vertical dashed lines) -->
+    <mxCell id="ll1" style="edgeStyle=none;html=1;strokeColor=#9e9e9e;strokeWidth=1;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" source="p1" target="p1" parent="1">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="100" y="900"/><mxPoint x="100" y="900"/></Array></mxGeometry>
+    </mxCell>
+
+    <!-- Activation boxes -->
+    <mxCell id="act1" value="" style="fillColor=#bbdefb;strokeColor=#1565c0;" vertex="1" parent="1">
+      <mxGeometry x="95" y="160" width="10" height="680" as="geometry"/>
+    </mxCell>
+    <mxCell id="act2" value="" style="fillColor=#bbdefb;strokeColor=#1565c0;" vertex="1" parent="1">
+      <mxGeometry x="305" y="200" width="10" height="600" as="geometry"/>
+    </mxCell>
+    <mxCell id="act3" value="" style="fillColor=#ffcdd2;strokeColor=#c62828;" vertex="1" parent="1">
+      <mxGeometry x="515" y="280" width="10" height="440" as="geometry"/>
+    </mxCell>
+    <mxCell id="act4" value="" style="fillColor=#c8e6c9;strokeColor=#2e7d32;" vertex="1" parent="1">
+      <mxGeometry x="725" y="320" width="10" height="380" as="geometry"/>
+    </mxCell>
+    <mxCell id="act5" value="" style="fillColor=#fff9c4;strokeColor=#f57f17;" vertex="1" parent="1">
+      <mxGeometry x="925" y="380" width="10" height="200" as="geometry"/>
+    </mxCell>
+    <mxCell id="act6" value="" style="fillColor=#e1bee7;strokeColor=#7b1fa2;" vertex="1" parent="1">
+      <mxGeometry x="1125" y="600" width="10" height="120" as="geometry"/>
+    </mxCell>
+    <mxCell id="act7" value="" style="fillColor=#c8e6c9;strokeColor=#2e7d32;" vertex="1" parent="1">
+      <mxGeometry x="1335" y="640" width="10" height="80" as="geometry"/>
+    </mxCell>
+
+    <!-- Message 1: Applicant → Frontend: Fill form -->
+    <mxCell id="m1" value="1. Fill loan application form (4-step wizard)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#1565c0;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="105" y="170" as="sourcePoint"/><mxPoint x="305" y="170" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Message 2: Frontend → Gateway -->
+    <mxCell id="m2" value="2. POST /gateway/applications  {Bearer JWT}" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#1565c0;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="315" y="210" as="sourcePoint"/><mxPoint x="515" y="210" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Message 3: Gateway validates JWT -->
+    <mxCell id="m3" value="3. Validate JWT token + check role" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#c62828;strokeWidth=1.5;endArrow=block;endFill=1;dashed=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="515" y="250" as="sourcePoint"/><mxPoint x="525" y="250" as="targetPoint"/><Array as="points"><mxPoint x="560" y="250"/><mxPoint x="560" y="270"/><mxPoint x="525" y="270"/></Array></mxGeometry>
+    </mxCell>
+
+    <!-- Message 4: Gateway → AppService -->
+    <mxCell id="m4" value="4. Forward request → POST /api/applications" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#c62828;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="525" y="290" as="sourcePoint"/><mxPoint x="725" y="290" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Message 5: Validation -->
+    <mxCell id="m5" value="5. FluentValidation on CreateLoanApplicationDto" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2e7d32;strokeWidth=1.5;endArrow=block;endFill=1;dashed=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="725" y="330" as="sourcePoint"/><mxPoint x="735" y="330" as="targetPoint"/><Array as="points"><mxPoint x="770" y="330"/><mxPoint x="770" y="350"/><mxPoint x="735" y="350"/></Array></mxGeometry>
+    </mxCell>
+
+    <!-- Message 6: Save to DB -->
+    <mxCell id="m6" value="6. INSERT LoanApplication (Status=Draft)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2e7d32;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="735" y="390" as="sourcePoint"/><mxPoint x="925" y="390" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Message 7: DB returns -->
+    <mxCell id="m7" value="7. Return ApplicationId (Guid)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#f57f17;strokeWidth=1.5;endArrow=open;endFill=0;dashed=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="925" y="430" as="sourcePoint"/><mxPoint x="735" y="430" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Message 8: Return to Frontend -->
+    <mxCell id="m8" value="8. ApiResponseDto { success, data: {applicationId} }" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2e7d32;strokeWidth=1.5;endArrow=open;endFill=0;dashed=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="725" y="470" as="sourcePoint"/><mxPoint x="315" y="470" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Separator note -->
+    <mxCell id="sep1" value="— Applicant clicks Submit —" style="text;html=1;strokeColor=#bdbdbd;fillColor=#f5f5f5;align=center;fontSize=11;fontStyle=2;fontColor=#616161;" vertex="1" parent="1">
+      <mxGeometry x="300" y="490" width="920" height="26" as="geometry"/>
+    </mxCell>
+
+    <!-- Message 9: Submit -->
+    <mxCell id="m9" value="9. POST /gateway/applications/{id}/submit  {Bearer JWT}" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#1565c0;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="105" y="530" as="sourcePoint"/><mxPoint x="515" y="530" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Message 10: Forward submit -->
+    <mxCell id="m10" value="10. POST /api/applications/{id}/submit" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#c62828;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="525" y="560" as="sourcePoint"/><mxPoint x="725" y="560" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Message 11: Status transition -->
+    <mxCell id="m11" value="11. Validate Draft→Submitted, INSERT StatusHistory" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2e7d32;strokeWidth=1.5;endArrow=block;endFill=1;dashed=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="735" y="590" as="sourcePoint"/><mxPoint x="925" y="590" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Message 12: Publish event -->
+    <mxCell id="m12" value="12. Publish LoanStatusChangedEvent (exchange: loan.events)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#7b1fa2;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="735" y="625" as="sourcePoint"/><mxPoint x="1125" y="625" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Message 13: RabbitMQ delivers -->
+    <mxCell id="m13" value="13. Deliver to loan.status.changed queue" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#7b1fa2;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="1135" y="655" as="sourcePoint"/><mxPoint x="1335" y="655" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Message 14: Send email -->
+    <mxCell id="m14" value="14. Send email to applicant via MailKit (async)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2e7d32;strokeWidth=1.5;endArrow=block;endFill=1;dashed=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="1335" y="695" as="sourcePoint"/><mxPoint x="105" y="695" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Message 15: Return success -->
+    <mxCell id="m15" value="15. ApiResponseDto { success: true, message: 'Application submitted' }" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2e7d32;strokeWidth=2;endArrow=open;endFill=0;dashed=1;fontSize=11;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="725" y="730" as="sourcePoint"/><mxPoint x="105" y="730" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Status lifecycle note -->
+    <mxCell id="note1" value="Status Lifecycle:&lt;br/&gt;Draft → Submitted → DocsPending → DocsVerified → UnderReview → Approved/Rejected → Closed" style="text;html=1;strokeColor=#1565c0;fillColor=#e3f2fd;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="100" y="800" width="580" height="50" as="geometry"/>
+    </mxCell>
+
+  </root>
+</mxGraphModel>

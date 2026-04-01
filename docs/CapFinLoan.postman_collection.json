@@ -1,0 +1,531 @@
+{
+  "info": {
+    "_postman_id": "capfinloan-collection-2026",
+    "name": "CapFinLoan API",
+    "description": "Complete API collection for CapFinLoan — Financial Loan Onboarding System.\n\nAll requests go through the Ocelot Gateway at http://localhost:5000.\n\nTest Credentials:\n- Admin: admin@capfinloan.com / Admin@1234\n- Applicant: Register a new account first.\n\nWorkflow:\n1. Register → Login → Copy JWT token\n2. Set token in collection variable: {{jwt_token}}\n3. Create Application → Submit → Upload Docs → Admin Review → Approve",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:5000", "type": "string" },
+    { "key": "jwt_token", "value": "", "type": "string" },
+    { "key": "admin_token", "value": "", "type": "string" },
+    { "key": "application_id", "value": "", "type": "string" },
+    { "key": "document_id", "value": "", "type": "string" },
+    { "key": "user_id", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "TC01 - Register Applicant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password@123\",\n  \"phone\": \"9876543210\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/gateway/auth/register", "host": ["{{base_url}}"], "path": ["gateway", "auth", "register"] }
+          }
+        },
+        {
+          "name": "TC02 - Register Duplicate Email (should fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password@123\",\n  \"phone\": \"9876543210\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/gateway/auth/register", "host": ["{{base_url}}"], "path": ["gateway", "auth", "register"] }
+          }
+        },
+        {
+          "name": "TC03 - Login Applicant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Token returned', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.data.token).to.be.a('string');",
+                  "  pm.collectionVariables.set('jwt_token', json.data.token);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password@123\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/gateway/auth/login", "host": ["{{base_url}}"], "path": ["gateway", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('admin_token', json.data.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@capfinloan.com\",\n  \"password\": \"Admin@1234\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/gateway/auth/login", "host": ["{{base_url}}"], "path": ["gateway", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/auth/profile", "host": ["{{base_url}}"], "path": ["gateway", "auth", "profile"] }
+          }
+        },
+        {
+          "name": "Forgot Password - Send OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/gateway/auth/forgot-password", "host": ["{{base_url}}"], "path": ["gateway", "auth", "forgot-password"] }
+          }
+        },
+        {
+          "name": "Reset Password with OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"otpCode\": \"123456\",\n  \"newPassword\": \"NewPassword@123\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/gateway/auth/reset-password", "host": ["{{base_url}}"], "path": ["gateway", "auth", "reset-password"] }
+          }
+        },
+        {
+          "name": "Admin - Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/auth/users?page=1&pageSize=10", "host": ["{{base_url}}"], "path": ["gateway", "auth", "users"], "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }] }
+          }
+        },
+        {
+          "name": "TC12 - Applicant hits Admin route (should 403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/auth/users", "host": ["{{base_url}}"], "path": ["gateway", "auth", "users"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "TC04 - Create Application Draft",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('ApplicationId returned', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.data.applicationId).to.be.a('string');",
+                  "  pm.collectionVariables.set('application_id', json.data.applicationId);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"loanType\": \"Personal\",\n  \"loanAmount\": 500000,\n  \"tenureMonths\": 60,\n  \"purpose\": \"Home renovation\",\n  \"fullName\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"9876543210\",\n  \"dateOfBirth\": \"1990-01-15T00:00:00Z\",\n  \"address\": \"123 Main Street, Mumbai, Maharashtra\",\n  \"employerName\": \"Acme Corp\",\n  \"employmentType\": \"Salaried\",\n  \"jobTitle\": \"Software Engineer\",\n  \"monthlyIncome\": 75000,\n  \"yearsOfExperience\": 5,\n  \"employerAddress\": \"456 Business Park, Mumbai\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/gateway/applications", "host": ["{{base_url}}"], "path": ["gateway", "applications"] }
+          }
+        },
+        {
+          "name": "TC05 - Submit with Missing Fields (should fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Errors returned', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"loanType\": \"\",\n  \"loanAmount\": 0\n}"
+            },
+            "url": { "raw": "{{base_url}}/gateway/applications", "host": ["{{base_url}}"], "path": ["gateway", "applications"] }
+          }
+        },
+        {
+          "name": "Update Application Draft",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"loanAmount\": 600000,\n  \"tenureMonths\": 72,\n  \"purpose\": \"Updated purpose\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/gateway/applications/{{application_id}}", "host": ["{{base_url}}"], "path": ["gateway", "applications", "{{application_id}}"] }
+          }
+        },
+        {
+          "name": "Submit Application",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/applications/{{application_id}}/submit", "host": ["{{base_url}}"], "path": ["gateway", "applications", "{{application_id}}", "submit"] }
+          }
+        },
+        {
+          "name": "Get My Applications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/applications/my?page=1&pageSize=10", "host": ["{{base_url}}"], "path": ["gateway", "applications", "my"], "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }] }
+          }
+        },
+        {
+          "name": "Get Application by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/applications/{{application_id}}", "host": ["{{base_url}}"], "path": ["gateway", "applications", "{{application_id}}"] }
+          }
+        },
+        {
+          "name": "Get Status History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/applications/{{application_id}}/status", "host": ["{{base_url}}"], "path": ["gateway", "applications", "{{application_id}}", "status"] }
+          }
+        },
+        {
+          "name": "TC08 - Admin Get All Applications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/admin/applications?page=1&pageSize=10", "host": ["{{base_url}}"], "path": ["gateway", "admin", "applications"], "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }] }
+          }
+        },
+        {
+          "name": "Admin Update Status to DocsPending",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newStatus\": \"DocsPending\",\n  \"remarks\": \"Please upload KYC documents\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/gateway/admin/applications/{{application_id}}/status", "host": ["{{base_url}}"], "path": ["gateway", "admin", "applications", "{{application_id}}", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "TC06 - Upload PDF Document",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('DocumentId returned', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.collectionVariables.set('document_id', json.data.documentId);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "/path/to/aadhaar.pdf" },
+                { "key": "applicationId", "value": "{{application_id}}", "type": "text" },
+                { "key": "documentType", "value": "AadhaarCard", "type": "text" }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/gateway/documents/upload", "host": ["{{base_url}}"], "path": ["gateway", "documents", "upload"] }
+          }
+        },
+        {
+          "name": "TC07 - Upload Invalid File Type (should fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Rejected with message', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "/path/to/malware.exe" },
+                { "key": "applicationId", "value": "{{application_id}}", "type": "text" },
+                { "key": "documentType", "value": "AadhaarCard", "type": "text" }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/gateway/documents/upload", "host": ["{{base_url}}"], "path": ["gateway", "documents", "upload"] }
+          }
+        },
+        {
+          "name": "Get Documents by Application",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/documents/{{application_id}}", "host": ["{{base_url}}"], "path": ["gateway", "documents", "{{application_id}}"] }
+          }
+        },
+        {
+          "name": "Download Document File",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/documents/file/{{document_id}}", "host": ["{{base_url}}"], "path": ["gateway", "documents", "file", "{{document_id}}"] }
+          }
+        },
+        {
+          "name": "TC09 - Admin Verify Document",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('IsVerified true', () => pm.expect(pm.response.json().data.isVerified).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isVerified\": true,\n  \"remarks\": \"Aadhaar card verified successfully\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/gateway/admin/documents/{{document_id}}/verify", "host": ["{{base_url}}"], "path": ["gateway", "admin", "documents", "{{document_id}}", "verify"] }
+          }
+        },
+        {
+          "name": "Admin Get Documents by Application",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/admin/documents/{{application_id}}", "host": ["{{base_url}}"], "path": ["gateway", "admin", "documents", "{{application_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Decisions",
+      "item": [
+        {
+          "name": "TC10 - Approve Application with Sanction Terms",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Decision saved', () => pm.expect(pm.response.json().success).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decisionType\": \"Approved\",\n  \"remarks\": \"All documents verified. Loan approved.\",\n  \"sanctionTerms\": \"Loan sanctioned at 10.5% interest rate. EMI due on 5th of every month.\",\n  \"loanAmountApproved\": 500000,\n  \"interestRate\": 10.5,\n  \"tenureMonths\": 60,\n  \"monthlyEmi\": 10747.22\n}"
+            },
+            "url": { "raw": "{{base_url}}/gateway/admin/applications/{{application_id}}/decision", "host": ["{{base_url}}"], "path": ["gateway", "admin", "applications", "{{application_id}}", "decision"] }
+          }
+        },
+        {
+          "name": "TC11 - Reject Application with Reason",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Rejected', () => pm.expect(pm.response.json().success).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decisionType\": \"Rejected\",\n  \"remarks\": \"Income insufficient for requested loan amount. Monthly income does not meet minimum criteria.\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/gateway/admin/applications/{{application_id}}/decision", "host": ["{{base_url}}"], "path": ["gateway", "admin", "applications", "{{application_id}}", "decision"] }
+          }
+        },
+        {
+          "name": "Get Decision by Application",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/admin/decisions/{{application_id}}", "host": ["{{base_url}}"], "path": ["gateway", "admin", "decisions", "{{application_id}}"] }
+          }
+        },
+        {
+          "name": "Admin Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/admin/reports/dashboard", "host": ["{{base_url}}"], "path": ["gateway", "admin", "reports", "dashboard"] }
+          }
+        },
+        {
+          "name": "Admin Report Summary",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/admin/reports/summary", "host": ["{{base_url}}"], "path": ["gateway", "admin", "reports", "summary"] }
+          }
+        },
+        {
+          "name": "Admin Monthly Trend",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/admin/reports/monthly", "host": ["{{base_url}}"], "path": ["gateway", "admin", "reports", "monthly"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Get Payment by Application",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/payments/{{application_id}}", "host": ["{{base_url}}"], "path": ["gateway", "payments", "{{application_id}}"] }
+          }
+        },
+        {
+          "name": "Get My Payments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "{{base_url}}/gateway/payments/my", "host": ["{{base_url}}"], "path": ["gateway", "payments", "my"] }
+          }
+        }
+      ]
+    }
+  ]
+}

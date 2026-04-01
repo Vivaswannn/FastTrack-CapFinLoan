@@ -126,6 +126,41 @@ namespace CapFinLoan.AuthService.Controllers
         }
 
         /// <summary>
+        /// Send OTP to email for password reset.
+        /// Public endpoint — always returns 200 (does not reveal if email exists).
+        /// </summary>
+        [HttpPost("forgot-password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> ForgotPassword(
+            [FromBody] ForgotPasswordDto dto)
+        {
+            await _authService.ForgotPasswordAsync(dto);
+
+            return Ok(
+                ApiResponseDto<object?>.SuccessResponse(
+                    null,
+                    "If that email is registered, an OTP has been sent."));
+        }
+
+        /// <summary>
+        /// Reset password using OTP. Verifies OTP and sets new password.
+        /// Public endpoint — no authentication required.
+        /// </summary>
+        [HttpPost("reset-password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ResetPassword(
+            [FromBody] ResetPasswordDto dto)
+        {
+            await _authService.ResetPasswordAsync(dto);
+
+            return Ok(
+                ApiResponseDto<object?>.SuccessResponse(
+                    null,
+                    "Password reset successfully. You can now sign in."));
+        }
+
+        /// <summary>
         /// Get profile of currently authenticated user.
         /// Requires valid JWT token.
         /// </summary>

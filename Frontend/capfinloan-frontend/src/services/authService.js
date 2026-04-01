@@ -9,4 +9,6 @@ export const authService = {
     api.get(`/auth/users?page=${page}&pageSize=${pageSize}`),
   updateUserStatus: (userId, data) =>
     api.put(`/auth/users/${userId}/status`, data),
+  forgotPassword: (data) => api.post('/auth/forgot-password', data),
+  resetPassword: (data) => api.post('/auth/reset-password', data),
 };

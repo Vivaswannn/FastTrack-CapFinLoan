@@ -45,11 +45,14 @@ namespace CapFinLoan.PaymentService.Tests
 
         // ── Helper ──────────────────────────────────────────────────────────
 
-        private LoanApprovedEvent BuildApprovedEvent(decimal amount = 500000m) =>
+        private LoanApprovedEvent BuildApprovedEvent(
+            decimal amount = 500000m,
+            Guid? applicationId = null,
+            Guid? userId = null) =>
             new LoanApprovedEvent
             {
-                ApplicationId      = _applicationId,
-                UserId             = _userId,
+                ApplicationId      = applicationId ?? _applicationId,
+                UserId             = userId ?? _userId,
                 ApplicantEmail     = "applicant@test.com",
                 ApplicantName      = "Test Applicant",
                 LoanAmountApproved = amount,
@@ -65,13 +68,10 @@ namespace CapFinLoan.PaymentService.Tests
         [Test]
         public async Task ProcessPaymentAsync_CreatesPaymentRecord_InDatabase()
         {
-            // Arrange
             var evt = BuildApprovedEvent();
 
-            // Act
             var result = await _service.ProcessPaymentAsync(evt);
 
-            // Assert — Payment record must be persisted
             result.Should().NotBeNull();
             result.PaymentId.Should().NotBe(Guid.Empty);
             result.ApplicationId.Should().Be(_applicationId);
@@ -87,22 +87,16 @@ namespace CapFinLoan.PaymentService.Tests
         [Test]
         public async Task ProcessPaymentAsync_SetsStatusToCompletedOrFailed()
         {
-            // Arrange
             var evt = BuildApprovedEvent(300000m);
 
-            // Act
             var result = await _service.ProcessPaymentAsync(evt);
 
-            // Assert — status must be a terminal state (Completed or Failed)
             result.Status.Should().BeOneOf("Completed", "Failed");
             result.ProcessedAt.Should().NotBeNull();
             result.Message.Should().NotBeNullOrEmpty();
 
-            // Completed payments must have a reference number
             if (result.Status == "Completed")
-            {
                 result.ReferenceNumber.Should().StartWith("DISB-");
-            }
         }
 
         // ── TEST 3 — GetPaymentsByApplicationAsync returns correct records ──
@@ -110,33 +104,15 @@ namespace CapFinLoan.PaymentService.Tests
         [Test]
         public async Task GetPaymentsByApplicationAsync_ReturnsPaymentsForApplication()
         {
-            // Arrange — process two events for the same application
-            var evt1 = BuildApprovedEvent(200000m);
-            var evt2 = BuildApprovedEvent(300000m);
+            await _service.ProcessPaymentAsync(BuildApprovedEvent(200000m));
+            await _service.ProcessPaymentAsync(BuildApprovedEvent(300000m));
 
-            await _service.ProcessPaymentAsync(evt1);
-            await _service.ProcessPaymentAsync(evt2);
+            // Payment for a different application — must not appear
+            await _service.ProcessPaymentAsync(BuildApprovedEvent(
+                100000m, applicationId: Guid.NewGuid(), userId: Guid.NewGuid()));
 
-            // Also create a payment for a different application
-            var otherEvent = new LoanApprovedEvent
-            {
-                ApplicationId      = Guid.NewGuid(),
-                UserId             = Guid.NewGuid(),
-                ApplicantEmail     = "other@test.com",
-                ApplicantName      = "Other",
-                LoanAmountApproved = 100000m,
-                InterestRate       = 8m,
-                TenureMonths       = 12,
-                MonthlyEmi         = 8772m,
-                ApprovedBy         = "admin@capfinloan.com"
-            };
-            await _service.ProcessPaymentAsync(otherEvent);
+            var results = await _service.GetPaymentsByApplicationAsync(_applicationId);
 
-            // Act
-            var results = await _service
-                .GetPaymentsByApplicationAsync(_applicationId);
-
-            // Assert — only payments for our application returned
             results.Should().HaveCount(2);
             results.Should().OnlyContain(p => p.ApplicationId == _applicationId);
         }
@@ -146,10 +122,8 @@ namespace CapFinLoan.PaymentService.Tests
         [Test]
         public async Task GetPaymentByIdAsync_NonExistentId_ReturnsNull()
         {
-            // Act
             var result = await _service.GetPaymentByIdAsync(Guid.NewGuid());
 
-            // Assert
             result.Should().BeNull();
         }
 
@@ -158,16 +132,163 @@ namespace CapFinLoan.PaymentService.Tests
         [Test]
         public async Task GetPaymentByIdAsync_ExistingPayment_ReturnsDto()
         {
-            // Arrange
             var created = await _service.ProcessPaymentAsync(BuildApprovedEvent());
 
-            // Act
             var result = await _service.GetPaymentByIdAsync(created.PaymentId);
 
-            // Assert
             result.Should().NotBeNull();
             result!.PaymentId.Should().Be(created.PaymentId);
             result.ApplicationId.Should().Be(_applicationId);
+        }
+
+        // ── TEST 6 — Payment DTO maps all fields correctly ───────────────────
+
+        [Test]
+        public async Task ProcessPaymentAsync_ResponseDto_MapsAllFieldsCorrectly()
+        {
+            var evt = BuildApprovedEvent(750000m);
+
+            var result = await _service.ProcessPaymentAsync(evt);
+
+            result.ApplicationId.Should().Be(_applicationId);
+            result.UserId.Should().Be(_userId);
+            result.AmountDisbursed.Should().Be(750000m);
+            result.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+            result.ProcessedAt.Should().NotBeNull();
+        }
+
+        // ── TEST 7 — Completed payment has reference number and success message
+
+        [Test]
+        [Repeat(10)]
+        public async Task ProcessPaymentAsync_CompletedPayment_HasReferenceAndMessage()
+        {
+            var evt = BuildApprovedEvent(100000m);
+            var result = await _service.ProcessPaymentAsync(evt);
+
+            if (result.Status == "Completed")
+            {
+                result.ReferenceNumber.Should().NotBeNullOrEmpty();
+                result.ReferenceNumber!.Should().StartWith("DISB-");
+                result.Message.Should().Contain("disbursed successfully");
+            }
+        }
+
+        // ── TEST 8 — Failed payment has no reference number ──────────────────
+
+        [Test]
+        [Repeat(10)]
+        public async Task ProcessPaymentAsync_FailedPayment_HasNoReferenceNumber()
+        {
+            var evt = BuildApprovedEvent(100000m);
+            var result = await _service.ProcessPaymentAsync(evt);
+
+            if (result.Status == "Failed")
+            {
+                result.ReferenceNumber.Should().BeNull();
+                result.Message.Should().NotBeNullOrEmpty();
+            }
+        }
+
+        // ── TEST 9 — Empty application returns empty list ────────────────────
+
+        [Test]
+        public async Task GetPaymentsByApplicationAsync_NoPayments_ReturnsEmptyList()
+        {
+            var results = await _service.GetPaymentsByApplicationAsync(Guid.NewGuid());
+
+            results.Should().NotBeNull();
+            results.Should().BeEmpty();
+        }
+
+        // ── TEST 10 — Multiple applications are isolated ─────────────────────
+
+        [Test]
+        public async Task GetPaymentsByApplicationAsync_MultipleApps_ReturnsSeparately()
+        {
+            var appId1 = Guid.NewGuid();
+            var appId2 = Guid.NewGuid();
+
+            await _service.ProcessPaymentAsync(BuildApprovedEvent(100000m, applicationId: appId1));
+            await _service.ProcessPaymentAsync(BuildApprovedEvent(200000m, applicationId: appId1));
+            await _service.ProcessPaymentAsync(BuildApprovedEvent(300000m, applicationId: appId2));
+
+            var results1 = await _service.GetPaymentsByApplicationAsync(appId1);
+            var results2 = await _service.GetPaymentsByApplicationAsync(appId2);
+
+            results1.Should().HaveCount(2);
+            results2.Should().HaveCount(1);
+            results1.Should().OnlyContain(p => p.ApplicationId == appId1);
+            results2.Should().OnlyContain(p => p.ApplicationId == appId2);
+        }
+
+        // ── TEST 11 — Large loan amount is processed correctly ───────────────
+
+        [Test]
+        public async Task ProcessPaymentAsync_MaxLoanAmount_ProcessedSuccessfully()
+        {
+            var evt = BuildApprovedEvent(amount: 10_000_000m); // max allowed
+
+            var result = await _service.ProcessPaymentAsync(evt);
+
+            result.Should().NotBeNull();
+            result.AmountDisbursed.Should().Be(10_000_000m);
+            result.Status.Should().BeOneOf("Completed", "Failed");
+        }
+
+        // ── TEST 12 — PaymentId is unique for each processed event ───────────
+
+        [Test]
+        public async Task ProcessPaymentAsync_EachCall_GeneratesUniquePaymentId()
+        {
+            var result1 = await _service.ProcessPaymentAsync(BuildApprovedEvent(100000m));
+            var result2 = await _service.ProcessPaymentAsync(BuildApprovedEvent(200000m));
+
+            result1.PaymentId.Should().NotBe(result2.PaymentId);
+        }
+
+        // ── TEST 13 — CreatedAt is set to UTC time ───────────────────────────
+
+        [Test]
+        public async Task ProcessPaymentAsync_CreatedAt_IsUtcTime()
+        {
+            var before = DateTime.UtcNow;
+            var result = await _service.ProcessPaymentAsync(BuildApprovedEvent());
+            var after  = DateTime.UtcNow;
+
+            result.CreatedAt.Should().BeOnOrAfter(before);
+            result.CreatedAt.Should().BeOnOrBefore(after);
+        }
+
+        // ── TEST 14 — UserId is persisted from the event ─────────────────────
+
+        [Test]
+        public async Task ProcessPaymentAsync_UserId_PersistedFromEvent()
+        {
+            var specificUserId = Guid.NewGuid();
+            var evt = BuildApprovedEvent(userId: specificUserId);
+
+            var result = await _service.ProcessPaymentAsync(evt);
+
+            result.UserId.Should().Be(specificUserId);
+
+            var dbRecord = await _db.Payments.FindAsync(result.PaymentId);
+            dbRecord!.UserId.Should().Be(specificUserId);
+        }
+
+        // ── TEST 15 — GetPaymentsByApplicationAsync returns ordered by CreatedAt descending
+
+        [Test]
+        public async Task GetPaymentsByApplicationAsync_ReturnsOrderedByCreatedAtDescending()
+        {
+            await _service.ProcessPaymentAsync(BuildApprovedEvent(100000m));
+            await Task.Delay(10); // ensure distinct timestamps
+            await _service.ProcessPaymentAsync(BuildApprovedEvent(200000m));
+
+            var results = await _service.GetPaymentsByApplicationAsync(_applicationId);
+
+            results.Should().HaveCount(2);
+            results[0].CreatedAt.Should().BeOnOrAfter(results[1].CreatedAt);
         }
     }
 }

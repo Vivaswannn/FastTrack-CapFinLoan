@@ -10,6 +10,7 @@ import ApplicantDashboard from '../pages/Applicant/Dashboard';
 import ApplyLoan from '../pages/Applicant/ApplyLoan';
 import Documents from '../pages/Applicant/Documents';
 import StatusTracking from '../pages/Applicant/StatusTracking';
+import EmiCalculator from '../pages/Applicant/EmiCalculator';
 import AdminDashboard from '../pages/Admin/Dashboard';
 import ApplicationQueue from '../pages/Admin/ApplicationQueue';
 import ReviewApplication from '../pages/Admin/ReviewApplication';
@@ -47,6 +48,9 @@ export default function AppRoutes() {
       } />
       <Route path="/applicant/status/:id" element={
         <ProtectedRoute><StatusTracking /></ProtectedRoute>
+      } />
+      <Route path="/applicant/calculator" element={
+        <ProtectedRoute><EmiCalculator /></ProtectedRoute>
       } />
 
       <Route path="/admin/dashboard" element={

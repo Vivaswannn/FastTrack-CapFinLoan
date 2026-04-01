@@ -1,0 +1,290 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- Title -->
+    <mxCell id="title" value="CapFinLoan — Entity Relationship Diagram (All 5 Databases)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#1a237e;" vertex="1" parent="1">
+      <mxGeometry x="200" y="20" width="1200" height="36" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== auth.Users ===== -->
+    <mxCell id="users_hdr" value="auth.Users" style="swimlane;startSize=30;fillColor=#1565c0;fontColor=#ffffff;strokeColor=#0d47a1;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="60" y="80" width="280" height="340" as="geometry"/>
+    </mxCell>
+    <mxCell id="u1" value="🔑 UserId : Guid (PK)" style="text;html=1;strokeColor=none;fillColor=#e3f2fd;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="60" y="110" width="280" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="u2" value="FullName : varchar(100) NOT NULL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="60" y="138" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="u3" value="Email : varchar(150) UNIQUE NOT NULL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="60" y="164" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="u4" value="PasswordHash : nvarchar(MAX)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="60" y="190" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="u5" value="Phone : varchar(15)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="60" y="216" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="u6" value="Role : varchar (Applicant | Admin)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="60" y="242" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="u7" value="IsActive : bit DEFAULT 1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="60" y="268" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="u8" value="OtpCode : varchar(6) NULL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="60" y="294" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="u9" value="OtpExpiry : datetime2 NULL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="60" y="320" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="u10" value="CreatedAt : datetime2 NOT NULL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="60" y="346" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="u11" value="UpdatedAt : datetime2 NULL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="60" y="372" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="db1_label" value="DB: CapFinLoan_Auth" style="text;html=1;strokeColor=none;fillColor=#bbdefb;align=center;fontSize=10;fontStyle=2;" vertex="1" parent="1">
+      <mxGeometry x="60" y="418" width="280" height="20" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== core.LoanApplications ===== -->
+    <mxCell id="loan_hdr" value="core.LoanApplications" style="swimlane;startSize=30;fillColor=#2e7d32;fontColor=#ffffff;strokeColor=#1b5e20;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="420" y="80" width="300" height="470" as="geometry"/>
+    </mxCell>
+    <mxCell id="l1" value="🔑 ApplicationId : Guid (PK)" style="text;html=1;strokeColor=none;fillColor=#e8f5e9;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="420" y="110" width="300" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="l2" value="UserId : Guid (cross-service, no FK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="138" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="l3" value="LoanType : varchar (Personal|Home|Vehicle…)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="164" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="l4" value="LoanAmount : decimal(18,2)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="190" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="l5" value="TenureMonths : int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="216" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="l6" value="Purpose : varchar(500)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="242" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="l7" value="FullName, Email, Phone (copied at submit)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="268" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="l8" value="DateOfBirth : datetime2 NULL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="294" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="l9" value="Address : varchar(500)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="320" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="l10" value="EmployerName, EmploymentType, JobTitle" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="346" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="l11" value="MonthlyIncome : decimal(18,2)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="372" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="l12" value="Status : varchar (Draft→…→Closed)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="398" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="l13" value="CreatedAt, UpdatedAt, SubmittedAt, DecidedAt" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="424" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="l14" value="[Nav] StatusHistory : ICollection&lt;&gt;" style="text;html=1;strokeColor=none;fillColor=#f1f8e9;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=2;" vertex="1" parent="1">
+      <mxGeometry x="420" y="450" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="db2_label" value="DB: CapFinLoan_Loan" style="text;html=1;strokeColor=none;fillColor=#c8e6c9;align=center;fontSize=10;fontStyle=2;" vertex="1" parent="1">
+      <mxGeometry x="420" y="548" width="300" height="20" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== core.StatusHistory ===== -->
+    <mxCell id="hist_hdr" value="core.StatusHistory" style="swimlane;startSize=30;fillColor=#388e3c;fontColor=#ffffff;strokeColor=#2e7d32;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="420" y="590" width="300" height="230" as="geometry"/>
+    </mxCell>
+    <mxCell id="h1" value="🔑 HistoryId : Guid (PK)" style="text;html=1;strokeColor=none;fillColor=#e8f5e9;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="420" y="620" width="300" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="h2" value="🔗 ApplicationId : Guid (FK → LoanApplications)" style="text;html=1;strokeColor=none;fillColor=#fff9c4;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="420" y="648" width="300" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="h3" value="FromStatus : varchar" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="676" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="h4" value="ToStatus : varchar" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="702" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="h5" value="Remarks : varchar(500)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="728" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="h6" value="ChangedBy : varchar(150)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="754" width="300" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="h7" value="ChangedAt : datetime2 NOT NULL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="780" width="300" height="26" as="geometry"/>
+    </mxCell>
+
+    <!-- FK: StatusHistory → LoanApplications -->
+    <mxCell id="fk1" value="1" style="edgeStyle=entityRelationEdgeStyle;endArrow=ERzeroToMany;startArrow=ERmandOne;html=1;strokeColor=#2e7d32;strokeWidth=2;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="400" y="704"/><mxPoint x="400" y="545"/></Array></mxGeometry>
+    </mxCell>
+
+    <!-- ===== docs.Documents ===== -->
+    <mxCell id="doc_hdr" value="docs.Documents" style="swimlane;startSize=30;fillColor=#e65100;fontColor=#ffffff;strokeColor=#bf360c;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="800" y="80" width="280" height="340" as="geometry"/>
+    </mxCell>
+    <mxCell id="d1" value="🔑 DocumentId : Guid (PK)" style="text;html=1;strokeColor=none;fillColor=#fbe9e7;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="800" y="110" width="280" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="d2" value="ApplicationId : Guid (cross-service, no FK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="138" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="d3" value="UserId : Guid (cross-service, no FK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="164" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="d4" value="DocumentType : varchar (AadhaarCard|PAN…)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="190" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="d5" value="FileName : varchar(255)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="216" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="d6" value="FilePath : varchar(500)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="242" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="d7" value="FileSizeBytes : bigint" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="268" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="d8" value="IsVerified : bit DEFAULT 0" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="294" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="d9" value="UploadedAt : datetime2" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="320" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="d10" value="VerifiedAt, VerifiedBy, VerificationRemarks" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="346" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="db3_label" value="DB: CapFinLoan_Document" style="text;html=1;strokeColor=none;fillColor=#ffe0b2;align=center;fontSize=10;fontStyle=2;" vertex="1" parent="1">
+      <mxGeometry x="800" y="418" width="280" height="20" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== admin.Decisions ===== -->
+    <mxCell id="dec_hdr" value="admin.Decisions" style="swimlane;startSize=30;fillColor=#6a1b9a;fontColor=#ffffff;strokeColor=#4a148c;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="80" width="280" height="300" as="geometry"/>
+    </mxCell>
+    <mxCell id="dec1" value="🔑 DecisionId : Guid (PK)" style="text;html=1;strokeColor=none;fillColor=#f3e5f5;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="110" width="280" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="dec2" value="ApplicationId : Guid (cross-service, no FK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="138" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="dec3" value="DecisionType : varchar (Approved|Rejected)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="164" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="dec4" value="Remarks : varchar(1000)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="190" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="dec5" value="SanctionTerms : varchar(2000) NULL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="216" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="dec6" value="LoanAmountApproved : decimal NULL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="242" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="dec7" value="InterestRate, TenureMonths, MonthlyEmi" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="268" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="dec8" value="DecidedBy : varchar(150), DecidedAt" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="294" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="db4_label" value="DB: CapFinLoan_Admin" style="text;html=1;strokeColor=none;fillColor=#e1bee7;align=center;fontSize=10;fontStyle=2;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="378" width="280" height="20" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== admin.Reports ===== -->
+    <mxCell id="rep_hdr" value="admin.Reports" style="swimlane;startSize=30;fillColor=#7b1fa2;fontColor=#ffffff;strokeColor=#6a1b9a;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="420" width="280" height="200" as="geometry"/>
+    </mxCell>
+    <mxCell id="r1" value="🔑 ReportId : Guid (PK)" style="text;html=1;strokeColor=none;fillColor=#f3e5f5;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="450" width="280" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="r2" value="ReportType : varchar(100)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="478" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="r3" value="GeneratedAt : datetime2" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="504" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="r4" value="GeneratedBy : varchar(150)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="530" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="r5" value="TotalRecords : int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="556" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="r6" value="Parameters : nvarchar(MAX) NULL (JSON)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="582" width="280" height="26" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== pay.Payments ===== -->
+    <mxCell id="pay_hdr" value="pay.Payments" style="swimlane;startSize=30;fillColor=#00695c;fontColor=#ffffff;strokeColor=#004d40;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="800" y="480" width="280" height="260" as="geometry"/>
+    </mxCell>
+    <mxCell id="pay1" value="🔑 PaymentId : Guid (PK)" style="text;html=1;strokeColor=none;fillColor=#e0f2f1;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="800" y="510" width="280" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="pay2" value="ApplicationId : Guid (cross-service, no FK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="538" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="pay3" value="UserId : Guid (cross-service, no FK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="564" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="pay4" value="AmountDisbursed : decimal(18,2)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="590" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="pay5" value="Status : varchar(20) (Pending|Completed…)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="616" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="pay6" value="ReferenceNumber : varchar(100) NULL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="642" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="pay7" value="CreatedAt : datetime2, ProcessedAt : NULL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="668" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="pay8" value="Message : varchar(500) NULL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="800" y="694" width="280" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="db5_label" value="DB: CapFinLoan_Payment" style="text;html=1;strokeColor=none;fillColor=#b2dfdb;align=center;fontSize=10;fontStyle=2;" vertex="1" parent="1">
+      <mxGeometry x="800" y="738" width="280" height="20" as="geometry"/>
+    </mxCell>
+
+    <!-- Cross-service dashed relationships -->
+    <mxCell id="cs1" value="UserId (cross-service)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#9e9e9e;strokeWidth=1.5;dashed=1;endArrow=open;endFill=0;fontSize=10;fontColor=#616161;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="340" y="200" as="sourcePoint"/><mxPoint x="420" y="150" as="targetPoint"/></mxGeometry>
+    </mxCell>
+    <mxCell id="cs2" value="ApplicationId (cross-service)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#9e9e9e;strokeWidth=1.5;dashed=1;endArrow=open;endFill=0;fontSize=10;fontColor=#616161;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="720" y="155" as="sourcePoint"/><mxPoint x="800" y="155" as="targetPoint"/></mxGeometry>
+    </mxCell>
+    <mxCell id="cs3" value="ApplicationId (cross-service, via RabbitMQ)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#9e9e9e;strokeWidth=1.5;dashed=1;endArrow=open;endFill=0;fontSize=10;fontColor=#616161;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><mxPoint x="720" y="420" as="sourcePoint"/><mxPoint x="800" y="600" as="targetPoint"/></mxGeometry>
+    </mxCell>
+
+    <!-- Legend -->
+    <mxCell id="leg_box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#bdbdbd;" vertex="1" parent="1">
+      <mxGeometry x="60" y="460" width="340" height="110" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg_t" value="&lt;b&gt;Legend&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="80" y="466" width="100" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg_pk" value="🔑 Primary Key" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="80" y="488" width="140" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg_fk" value="🔗 Foreign Key (same DB)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="80" y="510" width="180" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg_cs" value="- - - Cross-service reference (no DB FK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="80" y="532" width="280" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg_note" value="Note: No cross-database foreign keys by design (microservices isolation)" style="text;html=1;strokeColor=none;fillColor=#fff9c4;align=left;fontSize=10;fontStyle=2;" vertex="1" parent="1">
+      <mxGeometry x="80" y="554" width="300" height="14" as="geometry"/>
+    </mxCell>
+
+  </root>
+</mxGraphModel>

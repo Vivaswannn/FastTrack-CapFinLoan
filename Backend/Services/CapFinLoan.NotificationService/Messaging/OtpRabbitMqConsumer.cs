@@ -1,6 +1,9 @@
 using System.Text;
 using System.Text.Json;
 using CapFinLoan.SharedKernel.Events;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -75,14 +78,8 @@ namespace CapFinLoan.NotificationService.Messaging
 
                     if (otpEvent != null)
                     {
-                        _logger.LogInformation(
-                            "---------------------------------------\n" +
-                            "OTP NOTIFICATION SENT\n" +
-                            "  To:    {Email}\n" +
-                            "  Name:  {Name}\n" +
-                            "  OTP:   {OtpCode}\n" +
-                            "---------------------------------------",
-                            otpEvent.Email, otpEvent.FullName, otpEvent.OtpCode);
+                        await SendOtpEmailAsync(otpEvent);
+                        _logger.LogInformation("OTP email sent to {Email}", otpEvent.Email);
                     }
 
                     await _channel.BasicAckAsync(ea.DeliveryTag, false);
@@ -96,6 +93,36 @@ namespace CapFinLoan.NotificationService.Messaging
 
             await _channel.BasicConsumeAsync(QueueName, false, consumer, stoppingToken);
             await Task.Delay(Timeout.Infinite, stoppingToken);
+        }
+
+        private async Task SendOtpEmailAsync(OtpRequestedEvent otpEvent)
+        {
+            var smtpHost = _configuration["Smtp:Host"]!;
+            var smtpPort = int.Parse(_configuration["Smtp:Port"]!);
+            var smtpUser = _configuration["Smtp:Username"]!;
+            var smtpPass = _configuration["Smtp:Password"]!;
+            var fromName = _configuration["Smtp:FromName"] ?? "CapFinLoan";
+
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(fromName, smtpUser));
+            message.To.Add(new MailboxAddress(otpEvent.FullName, otpEvent.Email));
+            message.Subject = "Your CapFinLoan Login OTP";
+            message.Body = new TextPart("html")
+            {
+                Text = $@"
+                <div style='font-family:sans-serif;max-width:480px;margin:auto;padding:32px;border:1px solid #e2e8f0;border-radius:12px'>
+                  <h2 style='color:#0f172a;margin-bottom:8px'>CapFinLoan</h2>
+                  <p style='color:#475569'>Hi {otpEvent.FullName}, here is your one-time login code:</p>
+                  <div style='font-size:36px;font-weight:800;letter-spacing:12px;color:#0d9488;text-align:center;padding:24px 0'>{otpEvent.OtpCode}</div>
+                  <p style='color:#94a3b8;font-size:13px'>This code expires in 5 minutes. Do not share it with anyone.</p>
+                </div>"
+            };
+
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(smtpUser, smtpPass);
+            await smtp.SendAsync(message);
+            await smtp.DisconnectAsync(true);
         }
 
         public override void Dispose()

@@ -1,6 +1,7 @@
 using System.Text;
 using CapFinLoan.DocumentService.Data;
 using CapFinLoan.DocumentService.Exceptions;
+using CapFinLoan.DocumentService.Messaging;
 using CapFinLoan.DocumentService.Repositories;
 using CapFinLoan.DocumentService.Repositories.Interfaces;
 using CapFinLoan.DocumentService.Services;
@@ -138,6 +139,7 @@ builder.Services.AddDbContext<DocumentDbContext>(options =>
         }));
 
 // ── Dependency Injection ─────────────────────────────────────────────────────
+builder.Services.AddSingleton<IMessagePublisher, RabbitMqPublisher>();
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 

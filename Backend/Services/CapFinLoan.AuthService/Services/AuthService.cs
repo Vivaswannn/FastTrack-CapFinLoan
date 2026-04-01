@@ -201,6 +201,62 @@ namespace CapFinLoan.AuthService.Services
         }
 
         /// <inheritdoc/>
+        public async Task ForgotPasswordAsync(ForgotPasswordDto dto)
+        {
+            _logger.LogInformation("Forgot password request for: {Email}", dto.Email);
+
+            User? user = await _userRepository.GetByEmailAsync(dto.Email);
+
+            // Always return success — do not reveal whether email exists
+            if (user == null || !user.IsActive)
+            {
+                _logger.LogWarning("Forgot password — account not found or inactive: {Email}", dto.Email);
+                return;
+            }
+
+            string otp = new Random().Next(100000, 999999).ToString();
+            user.OtpCode = otp;
+            user.OtpExpiry = DateTime.UtcNow.AddMinutes(10);
+            await _userRepository.UpdateAsync(user);
+
+            _logger.LogInformation("[DEV ONLY] Password reset OTP for {Email} is {Otp}", user.Email, otp);
+
+            await _messagePublisher.PublishOtpRequestedAsync(new SharedKernel.Events.OtpRequestedEvent
+            {
+                UserId = user.UserId,
+                Email = user.Email,
+                FullName = user.FullName,
+                OtpCode = otp,
+                Timestamp = DateTime.UtcNow
+            });
+        }
+
+        /// <inheritdoc/>
+        public async Task ResetPasswordAsync(ResetPasswordDto dto)
+        {
+            _logger.LogInformation("Password reset attempt for: {Email}", dto.Email);
+
+            User? user = await _userRepository.GetByEmailAsync(dto.Email);
+
+            if (user == null || !user.IsActive)
+                throw new UnauthorizedAccessException("Invalid request.");
+
+            if (user.OtpCode != dto.OtpCode)
+                throw new UnauthorizedAccessException("Invalid OTP code.");
+
+            if (user.OtpExpiry < DateTime.UtcNow)
+                throw new UnauthorizedAccessException("OTP has expired. Please request a new one.");
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            user.OtpCode = null;
+            user.OtpExpiry = null;
+            user.UpdatedAt = DateTime.UtcNow;
+            await _userRepository.UpdateAsync(user);
+
+            _logger.LogInformation("Password reset successfully for: {Email}", user.Email);
+        }
+
+        /// <inheritdoc/>
         public async Task<UserResponseDto> GetProfileAsync(Guid userId)
         {
             User? user = await _userRepository.GetByIdAsync(userId);

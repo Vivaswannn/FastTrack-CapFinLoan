@@ -1,8 +1,10 @@
 using CapFinLoan.DocumentService.DTOs.Requests;
+using CapFinLoan.DocumentService.Messaging;
 using CapFinLoan.DocumentService.Models;
 using CapFinLoan.DocumentService.Repositories.Interfaces;
 using CapFinLoan.DocumentService.Validators;
 using CapFinLoan.SharedKernel.Enums;
+using CapFinLoan.SharedKernel.Events;
 using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,6 +20,7 @@ namespace CapFinLoan.DocumentService.Tests
         private Mock<IDocumentRepository> _repositoryMock = null!;
         private Mock<IWebHostEnvironment> _environmentMock = null!;
         private Mock<ILogger<Services.DocumentService>> _loggerMock = null!;
+        private Mock<IMessagePublisher> _publisherMock = null!;
         private Services.DocumentService _service = null!;
 
         private readonly Guid _userId        = Guid.NewGuid();
@@ -29,6 +32,11 @@ namespace CapFinLoan.DocumentService.Tests
             _repositoryMock   = new Mock<IDocumentRepository>();
             _environmentMock  = new Mock<IWebHostEnvironment>();
             _loggerMock       = new Mock<ILogger<Services.DocumentService>>();
+            _publisherMock    = new Mock<IMessagePublisher>();
+
+            _publisherMock
+                .Setup(p => p.PublishLoanStatusChangedAsync(It.IsAny<LoanStatusChangedEvent>()))
+                .Returns(Task.CompletedTask);
 
             // Point WebRootPath at the system temp dir so path resolution works
             _environmentMock.Setup(e => e.WebRootPath)
@@ -37,7 +45,8 @@ namespace CapFinLoan.DocumentService.Tests
             _service = new Services.DocumentService(
                 _repositoryMock.Object,
                 _environmentMock.Object,
-                _loggerMock.Object);
+                _loggerMock.Object,
+                _publisherMock.Object);
         }
 
         // ── Helper: build a mock IFormFile ───────────────────────────────────
