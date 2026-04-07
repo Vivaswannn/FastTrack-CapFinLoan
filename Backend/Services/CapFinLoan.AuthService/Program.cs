@@ -159,6 +159,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Auto-migrate database on startup (creates DB + applies migrations in Docker)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+    db.Database.Migrate();
+}
+
 Log.Information("CapFinLoan AuthService starting on port 5001");
 
 app.Run();

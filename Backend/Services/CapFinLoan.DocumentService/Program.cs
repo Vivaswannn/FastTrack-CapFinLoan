@@ -193,6 +193,13 @@ app.UseStaticFiles(); // serve uploaded files from wwwroot
 
 app.MapControllers();
 
+// Auto-migrate database on startup (creates DB + applies migrations in Docker)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DocumentDbContext>();
+    db.Database.Migrate();
+}
+
 Log.Information("CapFinLoan DocumentService starting on port 5003");
 
 app.Run();

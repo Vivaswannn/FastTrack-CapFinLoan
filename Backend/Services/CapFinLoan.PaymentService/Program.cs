@@ -130,6 +130,13 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
+// Auto-migrate database on startup (creates DB + applies migrations in Docker)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<PaymentDbContext>();
+    db.Database.Migrate();
+}
+
 app.MapGet("/health", () => new
 {
     status  = "Healthy",

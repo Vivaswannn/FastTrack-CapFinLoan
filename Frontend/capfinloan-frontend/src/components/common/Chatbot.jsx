@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Bot, X, Send, MessageCircle } from 'lucide-react';
 
 const SYSTEM_PROMPT = `You are FinBot, a helpful virtual assistant for CapFinLoan,
 a financial loan application platform in India.
@@ -50,13 +51,11 @@ export default function Chatbot() {
     const trimmed = text.trim();
     if (!trimmed || isTyping) return;
 
-    // Add user message
     const userMessage = { role: 'user', text: trimmed };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsTyping(true);
 
-    // Build conversation history for Ollama (exclude the initial greeting)
     const history = [...messages.slice(1), userMessage].map(m => ({
       role: m.role === 'assistant' ? 'assistant' : 'user',
       content: m.text
@@ -109,10 +108,7 @@ export default function Chatbot() {
           onClick={() => setIsOpen(true)}
           className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-all z-50 animate-bounce"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-              d="M8 10h.01M12 10h.01M16 10h.01M21 16.5a2.5 2.5 0 01-2.5 2.5H6l-4 4V5a2.5 2.5 0 012.5-2.5h15A2.5 2.5 0 0121 5v11.5z" />
-          </svg>
+          <MessageCircle size={24} />
         </button>
       )}
 
@@ -122,8 +118,10 @@ export default function Chatbot() {
 
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-700 to-blue-600 p-4 flex justify-between items-center shadow-sm">
-            <div className="flex items-center gap-2 text-white">
-              <span className="text-xl">🤖</span>
+            <div className="flex items-center gap-2.5 text-white">
+              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                <Bot size={18} className="text-white" />
+              </div>
               <div>
                 <span className="font-semibold text-lg leading-none">FinBot Assistant</span>
                 <p className="text-blue-200 text-xs">Powered by AI · CapFinLoan</p>
@@ -133,9 +131,7 @@ export default function Chatbot() {
               onClick={() => setIsOpen(false)}
               className="text-white hover:bg-white/20 p-1.5 rounded-lg transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X size={18} />
             </button>
           </div>
 
@@ -187,9 +183,7 @@ export default function Chatbot() {
                 disabled={!input.trim() || isTyping}
                 className="w-9 h-9 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white rounded-full flex items-center justify-center transition-colors flex-shrink-0"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
+                <Send size={15} />
               </button>
             </div>
 

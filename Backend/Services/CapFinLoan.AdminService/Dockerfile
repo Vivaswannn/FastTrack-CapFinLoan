@@ -18,9 +18,6 @@ RUN dotnet publish "CapFinLoan.AdminService.csproj" \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
-RUN adduser --disabled-password --gecos '' appuser
-USER appuser
-
 COPY --from=build /app/publish .
 
 RUN mkdir -p logs

@@ -192,7 +192,7 @@ export default function Login() {
 
           {/* ── Forgot Password Card ── */}
           {forgotMode ? (
-            <div className="bg-white rounded-[28px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-slate-100 p-8 sm:p-10">
+            <div className="bg-white rounded-[28px] shadow-md border border-slate-100 p-8 sm:p-10">
 
               {/* Header */}
               <div className="mb-7">
@@ -328,7 +328,7 @@ export default function Login() {
           ) : (
 
             /* ── Normal Login Card ── */
-            <div className="bg-white rounded-[28px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-slate-100 p-8 sm:p-10">
+            <div className="bg-white rounded-[28px] shadow-md border border-slate-100 p-8 sm:p-10">
               <div className="mb-8">
                 <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">
                   Welcome back

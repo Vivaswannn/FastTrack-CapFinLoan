@@ -8,10 +8,16 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ── Load ocelot.json ─────────────────────────────────────
+// ── Load ocelot config (environment-specific) ────────────
+// Production (Docker): use ocelot.Production.json (Docker service names)
+// Development (local): use ocelot.json (localhost)
+var ocelotFile = builder.Environment.IsProduction()
+    ? "ocelot.Production.json"
+    : "ocelot.json";
+
 builder.Configuration
     .SetBasePath(builder.Environment.ContentRootPath)
-    .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
+    .AddJsonFile(ocelotFile, optional: false, reloadOnChange: true)
     .AddEnvironmentVariables();
 
 // ── Serilog ──────────────────────────────────────────────

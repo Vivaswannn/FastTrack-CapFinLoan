@@ -111,7 +111,7 @@ export default function Register() {
               Join thousands of applicants who secured their dreams through CapFinLoan.
             </p>
 
-            <div className="bg-white/70 backdrop-blur-sm border border-slate-200/60 rounded-2xl p-6 space-y-4 shadow-[0_4px_16px_rgb(0,0,0,0.04)]">
+            <div className="bg-white/70 backdrop-blur-sm border border-slate-200/60 rounded-xl p-6 space-y-4 shadow-sm">
               {[
                 { icon: <ClipboardList size={15} />, text: 'Apply for loans up to ₹1 Crore' },
                 { icon: <Paperclip size={15} />, text: 'Upload KYC documents digitally' },
@@ -146,7 +146,7 @@ export default function Register() {
             <span className="font-extrabold text-slate-900 text-xl tracking-tight">CapFinLoan.</span>
           </div>
 
-          <div className="bg-white rounded-[28px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-slate-100 p-8">
+          <div className="bg-white rounded-[28px] shadow-md border border-slate-100 p-8">
             <div className="mb-6">
               <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-1">Create Account</h1>
               <p className="text-slate-400 text-sm">

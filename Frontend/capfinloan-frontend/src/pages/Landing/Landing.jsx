@@ -110,7 +110,7 @@ export default function Landing() {
                 Apply for Loan <ArrowRight size={20} />
               </Link>
               <Link to="/auth/login"
-                className="bg-white hover:bg-slate-50 text-slate-700 font-semibold px-8 py-4 rounded-xl text-lg border border-slate-200 shadow-[0_4px_16px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 transition-all">
+                className="bg-white hover:bg-slate-50 text-slate-700 font-semibold px-8 py-4 rounded-xl text-lg border border-slate-200 shadow-sm hover:-translate-y-0.5 transition-all">
                 Track Application
               </Link>
             </div>
@@ -180,7 +180,7 @@ export default function Landing() {
           <div className="grid md:grid-cols-4 gap-6">
             {features.map((f) => (
               <div key={f.title}
-                className="text-center p-8 rounded-2xl border border-slate-100 hover:border-teal-100 hover:bg-teal-50/20 hover:shadow-[0_4px_16px_rgb(0,0,0,0.06)] transition-all group">
+                className="text-center p-8 rounded-xl border border-slate-100 hover:border-teal-100 hover:bg-teal-50/20 hover:shadow-md transition-all group">
                 <div className="flex items-center justify-center w-14 h-14 bg-teal-50 rounded-2xl mx-auto mb-5 group-hover:bg-teal-100 transition-colors">
                   {f.icon}
                 </div>

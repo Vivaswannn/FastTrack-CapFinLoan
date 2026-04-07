@@ -23,16 +23,11 @@ services:
           memory: 2G
           cpus: '1.5'
     healthcheck:
-      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd",
-             "-S", "localhost",
-             "-U", "sa",
-             "-P", "${SA_PASSWORD}",
-             "-C",
-             "-Q", "SELECT 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $$SA_PASSWORD -C -Q 'SELECT 1'"]
+      interval: 15s
+      timeout: 15s
+      retries: 20
+      start_period: 60s
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -57,6 +52,22 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+  ollama:
+    image: ollama/ollama
+    container_name: capfinloan-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - capfinloan-network
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
@@ -108,12 +119,6 @@ services:
           memory: 512M
           cpus: '0.5'
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f",
-             "http://localhost:5001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   application-service:
     build:
@@ -301,6 +306,7 @@ volumes:
   rabbitmq_data:
   redis_data:
   document_uploads:
+  ollama_data:
 
 # ── Network ──────────────────────────────────────────────────
 networks:

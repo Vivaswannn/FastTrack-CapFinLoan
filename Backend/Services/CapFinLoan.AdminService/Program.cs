@@ -214,6 +214,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Auto-migrate database on startup (creates DB + applies migrations in Docker)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AdminDbContext>();
+    db.Database.Migrate();
+}
+
 // ── Health endpoint with SQL + Redis status ─────────────────────────────────
 app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
 {

@@ -22,10 +22,6 @@ RUN dotnet publish "CapFinLoan.AuthService.csproj" \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
-# Create non-root user for security
-RUN adduser --disabled-password --gecos '' appuser
-USER appuser
-
 # Copy published output from build stage
 COPY --from=build /app/publish .
 

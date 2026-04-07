@@ -17,9 +17,6 @@ RUN dotnet publish "CapFinLoan.Gateway.csproj" \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
-RUN adduser --disabled-password --gecos '' appuser
-USER appuser
-
 # Copy published output from build stage
 # ocelot.json must be in output
 COPY --from=build /app/publish .

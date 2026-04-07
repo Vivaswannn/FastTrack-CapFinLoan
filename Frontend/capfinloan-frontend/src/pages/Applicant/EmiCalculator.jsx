@@ -80,7 +80,7 @@ export default function EmiCalculator() {
           <div className="lg:col-span-3 space-y-6">
 
             {/* Loan Type Presets */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+            <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
                 Quick Presets — Interest Rates
               </p>
@@ -102,7 +102,7 @@ export default function EmiCalculator() {
             </div>
 
             {/* Sliders */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-6">
+            <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-6">
 
               {/* Principal */}
               <div>
@@ -202,7 +202,7 @@ export default function EmiCalculator() {
             </div>
 
             {/* Breakdown */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3">
+            <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-3">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Breakdown</p>
 
               <div className="flex justify-between items-center py-2 border-b border-slate-100">
@@ -262,7 +262,7 @@ export default function EmiCalculator() {
           </button>
 
           {showSchedule && schedule.length > 0 && (
-            <div className="mt-4 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="mt-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
               <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
                 <div>
                   <h3 className="text-sm font-bold text-slate-800">Amortization Schedule</h3>
