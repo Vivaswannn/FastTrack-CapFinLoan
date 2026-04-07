@@ -1,32 +1,28 @@
-# CapFinLoan — Stop All Services
+# CapFinLoan — Stop All Services (Docker mode)
 # Double-click or run: powershell -ExecutionPolicy Bypass -File stop-all.ps1
 
-Write-Host "Stopping CapFinLoan services..." -ForegroundColor Cyan
+$root = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-# Kill all dotnet run processes for CapFinLoan services
-$dotnetProcs = Get-Process -Name "dotnet" -ErrorAction SilentlyContinue
-$killed = 0
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "  CapFinLoan — Stopping All Services"    -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host ""
 
-foreach ($proc in $dotnetProcs) {
-    try {
-        $cmdline = (Get-WmiObject Win32_Process -Filter "ProcessId = $($proc.Id)").CommandLine
-        if ($cmdline -match "CapFinLoan") {
-            Stop-Process -Id $proc.Id -Force
-            $killed++
-        }
-    } catch {}
-}
+# ── Stop Docker containers ────────────────────────────────────────────────────
+Write-Host "Stopping Docker containers..." -ForegroundColor Yellow
+Set-Location $root
+docker-compose down
 
-Write-Host "  Stopped $killed dotnet service(s)" -ForegroundColor Green
+Write-Host ""
 
-# Kill npm / node (Vite frontend)
+# ── Stop React frontend (node/npm) ────────────────────────────────────────────
 $nodeProcs = Get-Process -Name "node" -ErrorAction SilentlyContinue
 if ($nodeProcs) {
     $nodeProcs | Stop-Process -Force
-    Write-Host "  Stopped $($nodeProcs.Count) node/npm process(es)" -ForegroundColor Green
+    Write-Host "Stopped $($nodeProcs.Count) frontend process(es)" -ForegroundColor Green
 }
 
 Write-Host ""
-Write-Host "All CapFinLoan services stopped." -ForegroundColor Cyan
+Write-Host "All services stopped." -ForegroundColor Cyan
 Write-Host "Press any key to exit..."
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
