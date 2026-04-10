@@ -1,6 +1,5 @@
 # CapFinLoan — Financial Loan Onboarding System
 
-> Capgemini Fast-Track Onboarding Evaluation Project
 
 A production-grade, microservices-based loan onboarding and approval platform built with ASP.NET Core .NET 10, React (Vite), and an event-driven architecture.
 
@@ -410,4 +409,4 @@ All endpoints return a consistent wrapper:
 
 ---
 
-*Built for Capgemini Fast-Track Onboarding Evaluation — 2026*
+*CapFinLoan — 2026*

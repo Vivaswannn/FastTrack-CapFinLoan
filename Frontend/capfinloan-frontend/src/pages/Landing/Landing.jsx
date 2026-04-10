@@ -75,16 +75,16 @@ export default function Landing() {
         </div>
       </nav>
 
-      {/* ── Hero — Sun-Filled Office Photography ── */}
+      {/* ── Hero ── */}
       <section className="relative pt-16 min-h-[90vh] flex items-center overflow-hidden">
-        {/* Bright, airy office background */}
+        {/* Finance-themed: modern financial district / professional banking */}
         <img
-          src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop"
-          alt="Modern financial office"
+          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
+          alt="Financial district"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        {/* Soft white overlay — keeps the image bright, ensures dark text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/75 to-white/20" />
+        {/* Strong left overlay so text stays readable, fades to reveal image on right */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/30" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-28 w-full">
           <div className="max-w-xl">
@@ -231,7 +231,7 @@ export default function Landing() {
             </div>
             <span className="text-white font-extrabold tracking-tight">CapFinLoan</span>
           </div>
-          <p className="text-sm">© {new Date().getFullYear()} CapFinLoan Financial Systems · Built for Capgemini Fast-Track.</p>
+          <p className="text-sm">© {new Date().getFullYear()} CapFinLoan Financial Systems.</p>
           <div className="flex gap-6 text-sm">
             <Link to="/auth/login" className="hover:text-white transition-colors font-medium">Login</Link>
             <Link to="/auth/register" className="hover:text-white transition-colors font-medium">Register</Link>
