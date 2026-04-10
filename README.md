@@ -5,6 +5,20 @@ A production-grade, microservices-based loan onboarding and approval platform bu
 
 ---
 
+## Diagrams
+
+| Diagram | Link |
+|---|---|
+| High Level Design (HLD) | [Docs/HLD.md](Docs/HLD.md) |
+| Low Level Design (LLD) | [Docs/LLD.md](Docs/LLD.md) |
+| ER Diagram | [Docs/ERDiagram.png](Docs/ERDiagram.png) |
+| Use Case Diagram | [Docs/UseCaseDiagram.png](Docs/UseCaseDiagram.png) |
+| Sequence Diagram | [Docs/SequenceDiagram.png](Docs/SequenceDiagram.png) |
+| Class Diagram | [Docs/ClassDiagram.png](Docs/ClassDiagram.png) |
+| Postman Collection | [Docs/CapFinLoan.postman_collection.json](Docs/CapFinLoan.postman_collection.json) |
+
+---
+
 ## Table of Contents
 
 - [Overview](#overview)
