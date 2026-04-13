@@ -36,19 +36,17 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Restore dependencies
-        run: dotnet restore "CapFinLoan/Backend/CapFinLoan.slnx"
+        run: dotnet restore "Backend/CapFinLoan.slnx"
 
       - name: Build solution
         run: |
-          dotnet build \
-            "CapFinLoan/Backend/CapFinLoan.slnx" \
+          dotnet build "Backend/CapFinLoan.slnx" \
             --no-restore \
             --configuration Release
 
       - name: Run unit tests with coverage
         run: |
-          dotnet test \
-            "CapFinLoan/Backend/CapFinLoan.slnx" \
+          dotnet test "Backend/CapFinLoan.slnx" \
             --no-build \
             --configuration Release \
             --collect:"XPlat Code Coverage" \
@@ -88,16 +86,16 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        working-directory: CapFinLoan/Frontend/capfinloan-frontend
+        working-directory: Frontend/capfinloan-frontend
         run: npm ci
 
       - name: Security audit
-        working-directory: CapFinLoan/Frontend/capfinloan-frontend
+        working-directory: Frontend/capfinloan-frontend
         run: npm audit --audit-level=high
         continue-on-error: true
 
       - name: Build frontend
-        working-directory: CapFinLoan/Frontend/capfinloan-frontend
+        working-directory: Frontend/capfinloan-frontend
         run: npm run build
         env:
           VITE_API_URL: http://localhost:5000/gateway
@@ -106,7 +104,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-dist
-          path: CapFinLoan/Frontend/capfinloan-frontend/dist
+          path: Frontend/capfinloan-frontend/dist
 
   # ── Job 3: Docker Build (only on push to master/main) ─────
   docker-build:
@@ -125,56 +123,56 @@ jobs:
       - name: Build Gateway image
         uses: docker/build-push-action@v5
         with:
-          context: CapFinLoan/Backend
-          file: CapFinLoan/Backend/ApiGateway/CapFinLoan.Gateway/Dockerfile
+          context: Backend
+          file: Backend/ApiGateway/CapFinLoan.Gateway/Dockerfile
           push: false
           tags: capfinloan/gateway:latest
 
       - name: Build AuthService image
         uses: docker/build-push-action@v5
         with:
-          context: CapFinLoan/Backend
-          file: CapFinLoan/Backend/Services/CapFinLoan.AuthService/Dockerfile
+          context: Backend
+          file: Backend/Services/CapFinLoan.AuthService/Dockerfile
           push: false
           tags: capfinloan/auth-service:latest
 
       - name: Build ApplicationService image
         uses: docker/build-push-action@v5
         with:
-          context: CapFinLoan/Backend
-          file: CapFinLoan/Backend/Services/CapFinLoan.ApplicationService/Dockerfile
+          context: Backend
+          file: Backend/Services/CapFinLoan.ApplicationService/Dockerfile
           push: false
           tags: capfinloan/application-service:latest
 
       - name: Build DocumentService image
         uses: docker/build-push-action@v5
         with:
-          context: CapFinLoan/Backend
-          file: CapFinLoan/Backend/Services/CapFinLoan.DocumentService/Dockerfile
+          context: Backend
+          file: Backend/Services/CapFinLoan.DocumentService/Dockerfile
           push: false
           tags: capfinloan/document-service:latest
 
       - name: Build AdminService image
         uses: docker/build-push-action@v5
         with:
-          context: CapFinLoan/Backend
-          file: CapFinLoan/Backend/Services/CapFinLoan.AdminService/Dockerfile
+          context: Backend
+          file: Backend/Services/CapFinLoan.AdminService/Dockerfile
           push: false
           tags: capfinloan/admin-service:latest
 
       - name: Build NotificationService image
         uses: docker/build-push-action@v5
         with:
-          context: CapFinLoan/Backend
-          file: CapFinLoan/Backend/Services/CapFinLoan.NotificationService/Dockerfile
+          context: Backend
+          file: Backend/Services/CapFinLoan.NotificationService/Dockerfile
           push: false
           tags: capfinloan/notification-service:latest
 
       - name: Build PaymentService image
         uses: docker/build-push-action@v5
         with:
-          context: CapFinLoan/Backend
-          file: CapFinLoan/Backend/Services/CapFinLoan.PaymentService/Dockerfile
+          context: Backend
+          file: Backend/Services/CapFinLoan.PaymentService/Dockerfile
           push: false
           tags: capfinloan/payment-service:latest
 
