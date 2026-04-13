@@ -199,7 +199,7 @@ namespace CapFinLoan.AuthService.Tests
         // ─────────────────────────────────────────────────
 
         [Test]
-        public async Task LoginAsync_WithValidCredentials_ShouldInitiateOtp()
+        public async Task LoginAsync_WithValidCredentials_ShouldReturnJwt()
         {
             User user = BuildUser();
             LoginDto dto = new LoginDto { Email = user.Email, Password = "Password@123" };
@@ -208,15 +208,13 @@ namespace CapFinLoan.AuthService.Tests
             var result = await _authService.LoginAsync(dto);
 
             result.Should().NotBeNull();
-            result.RequiresOtp.Should().BeTrue();
+            result.RequiresOtp.Should().BeFalse();
             result.Email.Should().Be(user.Email);
-            result.Token.Should().BeNullOrEmpty();
-            
-            _mockMessagePublisher.Verify(m => m.PublishOtpRequestedAsync(It.IsAny<CapFinLoan.SharedKernel.Events.OtpRequestedEvent>()), Times.Once);
+            result.Token.Should().NotBeNullOrEmpty();
         }
 
         [Test]
-        public async Task LoginAsync_AdminLogin_ShouldInitiateOtp()
+        public async Task LoginAsync_AdminLogin_ShouldReturnJwt()
         {
             User admin = BuildUser(email: "admin@capfinloan.com", role: "Admin");
             LoginDto dto = new LoginDto { Email = admin.Email, Password = "Password@123" };
@@ -224,8 +222,10 @@ namespace CapFinLoan.AuthService.Tests
 
             var result = await _authService.LoginAsync(dto);
 
-            result.RequiresOtp.Should().BeTrue();
+            result.RequiresOtp.Should().BeFalse();
+            result.Token.Should().NotBeNullOrEmpty();
             result.Email.Should().Be("admin@capfinloan.com");
+            result.Role.Should().Be("Admin");
         }
 
         [Test]
