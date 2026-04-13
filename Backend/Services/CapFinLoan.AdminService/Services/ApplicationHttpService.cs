@@ -79,6 +79,37 @@ namespace CapFinLoan.AdminService.Services
         }
 
         /// <inheritdoc/>
+        public async Task<string?> GetApplicationStatusAsync(
+            Guid applicationId,
+            string adminToken)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient("ApplicationService");
+                var request = new HttpRequestMessage(
+                    HttpMethod.Get,
+                    $"/api/applications/{applicationId}");
+                request.Headers.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue(
+                        "Bearer", adminToken);
+                var response = await client.SendAsync(request);
+                if (!response.IsSuccessStatusCode) return null;
+                var body = await response.Content.ReadAsStringAsync();
+                // Extract status from: {"success":true,"data":{"status":"UnderReview",...}}
+                using var doc = System.Text.Json.JsonDocument.Parse(body);
+                return doc.RootElement
+                    .GetProperty("data")
+                    .GetProperty("status")
+                    .GetString();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get application status for {ApplicationId}", applicationId);
+                return null;
+            }
+        }
+
+        /// <inheritdoc/>
         public async Task<string?> GetApplicationQueueAsync(
             int page,
             int pageSize,

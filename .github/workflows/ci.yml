@@ -2,9 +2,9 @@ name: CapFinLoan CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, master, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
 
 env:
   DOTNET_VERSION: '10.0.x'

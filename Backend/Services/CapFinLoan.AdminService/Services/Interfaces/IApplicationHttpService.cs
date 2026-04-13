@@ -26,5 +26,13 @@ namespace CapFinLoan.AdminService.Services.Interfaces
             int pageSize,
             string? statusFilter,
             string adminToken);
+
+        /// <summary>
+        /// Fetches a single application's current status from ApplicationService.
+        /// Returns null if the application is not found or the call fails.
+        /// </summary>
+        Task<string?> GetApplicationStatusAsync(
+            Guid applicationId,
+            string adminToken);
     }
 }

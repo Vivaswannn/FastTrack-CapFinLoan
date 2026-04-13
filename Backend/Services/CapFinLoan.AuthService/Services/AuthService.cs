@@ -128,30 +128,21 @@ namespace CapFinLoan.AuthService.Services
             }
 
             _logger.LogInformation(
-                "User authenticated successfully, initiating OTP: {Email}",
-                user.Email);
+                "User authenticated successfully: {Email} Role: {Role}",
+                user.Email, user.Role);
 
-            // Generate 6-digit OTP
-            string otp = new Random().Next(100000, 999999).ToString();
-            user.OtpCode = DefaultOtpFallbackForDev(otp, user.Email); // For local dev it's easier to mock or log
-            user.OtpCode = otp; // Real OTP
-            user.OtpExpiry = DateTime.UtcNow.AddMinutes(5);
-            await _userRepository.UpdateAsync(user);
-
-            // Publish OTP event to RabbitMQ
-            await _messagePublisher.PublishOtpRequestedAsync(new SharedKernel.Events.OtpRequestedEvent
-            {
-                UserId = user.UserId,
-                Email = user.Email,
-                FullName = user.FullName,
-                OtpCode = otp,
-                Timestamp = DateTime.UtcNow
-            });
+            // Generate JWT and return immediately
+            string token = _jwtHelper.GenerateToken(user);
 
             return new AuthResponseDto
             {
-                RequiresOtp = true,
-                Email = user.Email
+                Token = token,
+                ExpiresAt = _jwtHelper.GetExpiryTime(),
+                UserId = user.UserId,
+                FullName = user.FullName,
+                Email = user.Email,
+                Role = user.Role,
+                RequiresOtp = false
             };
         }
 

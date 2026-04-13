@@ -57,7 +57,17 @@ namespace CapFinLoan.AdminService.Services
                 throw new InvalidOperationException(
                     "A decision has already been made for this application.");
 
-            // Step 2: Calculate EMI for approvals
+            // Step 2: Validate application is in UnderReview status
+            var currentStatus = await _applicationHttpService
+                .GetApplicationStatusAsync(applicationId, adminToken);
+            if (currentStatus != null && currentStatus != "UnderReview")
+            {
+                throw new InvalidOperationException(
+                    $"Cannot make a decision on an application in '{currentStatus}' status. " +
+                    "Application must be in 'UnderReview' status.");
+            }
+
+            // Step 3: Calculate EMI for approvals
             decimal? monthlyEmi = null;
             if (dto.DecisionType == "Approved"
                 && dto.LoanAmountApproved.HasValue
