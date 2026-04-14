@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using CapFinLoan.ApplicationService.Data;
 using CapFinLoan.ApplicationService.Exceptions;
+using CapFinLoan.ApplicationService.Hubs;
 using CapFinLoan.ApplicationService.Messaging;
 using CapFinLoan.ApplicationService.Repositories;
 using CapFinLoan.ApplicationService.Repositories.Interfaces;
@@ -24,6 +25,9 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
+
+// ── SignalR ───────────────────────────────────────────────
+builder.Services.AddSignalR();
 
 // ── Controllers ──────────────────────────────────────────
 builder.Services.AddControllers()
@@ -162,12 +166,15 @@ app.UseSwaggerUI(options =>
 
 app.UseCors("AllowReact");
 
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<LoanStatusHub>("/hubs/loanstatus");
 
 // Auto-migrate database on startup (creates DB + applies migrations in Docker)
 using (var scope = app.Services.CreateScope())

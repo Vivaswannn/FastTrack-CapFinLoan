@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, Wifi, WifiOff } from 'lucide-react';
+import * as signalR from '@microsoft/signalr';
 import PageLayout from '../../components/layout/PageLayout';
 import StatusBadge from '../../components/common/StatusBadge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -26,8 +27,48 @@ export default function StatusTracking() {
   const [history, setHistory] = useState([]);
   const [decision, setDecision] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [connected, setConnected] = useState(false);
+  const connectionRef = useRef(null);
 
   useEffect(() => { fetchAll(); }, [id]);
+
+  // Set up SignalR connection
+  useEffect(() => {
+    const apiBase = import.meta.env.VITE_API_URL?.replace('/gateway', '') || 'http://localhost:5002';
+    const hubUrl = `${apiBase.replace(':5000', ':5002')}/hubs/loanstatus`;
+
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl(hubUrl, { withCredentials: false })
+      .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.Warning)
+      .build();
+
+    connection.on('StatusUpdated', (update) => {
+      toast.success(`Status updated: ${update.newStatus}`, { icon: '🔔' });
+      // Refresh data so timeline and badge reflect the new status
+      fetchAll();
+    });
+
+    connection.onreconnecting(() => setConnected(false));
+    connection.onreconnected(() => setConnected(true));
+    connection.onclose(() => setConnected(false));
+
+    connection.start()
+      .then(() => {
+        setConnected(true);
+        return connection.invoke('JoinApplicationGroup', id);
+      })
+      .catch(() => {
+        // SignalR unavailable — app still works via polling
+        setConnected(false);
+      });
+
+    connectionRef.current = connection;
+
+    return () => {
+      connection.stop();
+    };
+  }, [id]);
 
   const fetchAll = async () => {
     setLoading(true);
@@ -47,7 +88,6 @@ export default function StatusTracking() {
         const decRes = await adminService.getDecision(id);
         if (decRes.data?.data) setDecision(decRes.data.data);
       } catch (err) {
-        // 404 = no decision yet (expected), any other error = log it
         if (err.response?.status !== 404 && err.response?.status !== 401) {
           console.warn('Decision fetch error:', err.response?.status);
         }
@@ -78,7 +118,14 @@ export default function StatusTracking() {
       title="Application Status"
       subtitle={`Tracking: ${id.slice(0, 8)}...`}
       action={
-        <Link to="/applicant/dashboard" className="btn-secondary text-sm">← Back</Link>
+        <div className="flex items-center gap-3">
+          <span className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full ${connected ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
+            {connected
+              ? <><Wifi size={12} /> Live</>
+              : <><WifiOff size={12} /> Polling</>}
+          </span>
+          <Link to="/applicant/dashboard" className="btn-secondary text-sm">← Back</Link>
+        </div>
       }>
 
       <div className="grid lg:grid-cols-5 gap-6">

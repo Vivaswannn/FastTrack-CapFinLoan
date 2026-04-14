@@ -152,6 +152,8 @@ app.UseSwaggerUI(options =>
 
 app.UseCors("AllowReact");
 
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthentication();

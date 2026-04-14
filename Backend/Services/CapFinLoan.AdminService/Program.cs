@@ -178,6 +178,7 @@ builder.Services.AddScoped<IDecisionRepository, DecisionRepository>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IApplicationHttpService, ApplicationHttpService>();
 builder.Services.AddSingleton<ILoanApprovedPublisher, LoanApprovedPublisher>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
 // ── HttpClient with Polly resilience for ApplicationService calls ─────────────
 builder.Services.AddHttpClient("ApplicationService", client =>
@@ -207,6 +208,8 @@ app.UseSwaggerUI(options =>
 
 app.UseCors("AllowReact");
 
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthentication();

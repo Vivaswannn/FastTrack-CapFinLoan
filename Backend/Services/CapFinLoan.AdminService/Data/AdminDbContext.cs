@@ -23,6 +23,9 @@ namespace CapFinLoan.AdminService.Data
         /// <summary>Reports table — all generated operational reports</summary>
         public DbSet<Report> Reports { get; set; }
 
+        /// <summary>Audit log table — every admin action for compliance</summary>
+        public DbSet<AuditLog> AuditLogs { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -49,6 +52,19 @@ namespace CapFinLoan.AdminService.Data
             modelBuilder.Entity<Report>()
                 .HasIndex(r => r.GeneratedAt)
                 .HasDatabaseName("IX_Reports_GeneratedAt");
+
+            // Audit log indexes for fast lookup
+            modelBuilder.Entity<AuditLog>()
+                .HasIndex(a => a.EntityId)
+                .HasDatabaseName("IX_AuditLogs_EntityId");
+
+            modelBuilder.Entity<AuditLog>()
+                .HasIndex(a => a.CreatedAt)
+                .HasDatabaseName("IX_AuditLogs_CreatedAt");
+
+            modelBuilder.Entity<AuditLog>()
+                .HasIndex(a => a.PerformedByUserId)
+                .HasDatabaseName("IX_AuditLogs_PerformedByUserId");
         }
     }
 }

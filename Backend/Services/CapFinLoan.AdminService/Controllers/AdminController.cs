@@ -2,6 +2,7 @@ using System.Security.Claims;
 using CapFinLoan.AdminService.DTOs.Requests;
 using CapFinLoan.AdminService.Features.Commands;
 using CapFinLoan.AdminService.Features.Queries;
+using CapFinLoan.AdminService.Services.Interfaces;
 using CapFinLoan.SharedKernel.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -21,13 +22,16 @@ namespace CapFinLoan.AdminService.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<AdminController> _logger;
+        private readonly IAuditLogService _auditLogService;
 
         public AdminController(
             IMediator mediator,
-            ILogger<AdminController> logger)
+            ILogger<AdminController> logger,
+            IAuditLogService auditLogService)
         {
-            _mediator = mediator;
-            _logger   = logger;
+            _mediator        = mediator;
+            _logger          = logger;
+            _auditLogService = auditLogService;
         }
 
         // ── Claims helpers ───────────────────────────────────────────────────
@@ -200,6 +204,20 @@ namespace CapFinLoan.AdminService.Controllers
 
             return File(bytes, "text/csv",
                 $"decisions_{DateTime.UtcNow:yyyyMMdd}.csv");
+        }
+
+        /// <summary>
+        /// Returns the full audit trail for a specific application.
+        /// Shows every admin action with actor, timestamp, old and new values.
+        /// </summary>
+        [HttpGet("applications/{appId:guid}/audit")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAuditTrail(Guid appId)
+        {
+            var logs = await _auditLogService.GetAuditTrailAsync(appId);
+            return Ok(ApiResponseDto<object>.SuccessResponse(
+                logs, $"{logs.Count} audit entries found"));
         }
     }
 }

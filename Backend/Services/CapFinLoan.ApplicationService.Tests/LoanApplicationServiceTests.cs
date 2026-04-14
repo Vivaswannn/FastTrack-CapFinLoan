@@ -1,5 +1,6 @@
 using CapFinLoan.ApplicationService.DTOs.Requests;
 using CapFinLoan.ApplicationService.DTOs.Responses;
+using CapFinLoan.ApplicationService.Hubs;
 using CapFinLoan.ApplicationService.Messaging;
 using CapFinLoan.ApplicationService.Models;
 using CapFinLoan.ApplicationService.Repositories.Interfaces;
@@ -7,6 +8,7 @@ using CapFinLoan.ApplicationService.Services;
 using CapFinLoan.SharedKernel.Enums;
 using CapFinLoan.SharedKernel.Events;
 using FluentAssertions;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -23,6 +25,7 @@ namespace CapFinLoan.ApplicationService.Tests
         private Mock<ILoanApplicationRepository> _repositoryMock = null!;
         private Mock<ILogger<LoanApplicationService>> _loggerMock = null!;
         private Mock<IMessagePublisher> _messagePublisherMock = null!;
+        private Mock<IHubContext<LoanStatusHub>> _hubContextMock = null!;
         private LoanApplicationService _service = null!;
 
         private static readonly Guid TestUserId = Guid.NewGuid();
@@ -40,10 +43,22 @@ namespace CapFinLoan.ApplicationService.Tests
                 .Setup(p => p.PublishLoanStatusChangedAsync(
                     It.IsAny<LoanStatusChangedEvent>()))
                 .Returns(Task.CompletedTask);
+
+            // Mock SignalR hub context — tests don't need real WebSocket infrastructure
+            _hubContextMock = new Mock<IHubContext<LoanStatusHub>>();
+            var mockClients = new Mock<IHubClients>();
+            var mockClientProxy = new Mock<IClientProxy>();
+            mockClients.Setup(c => c.Group(It.IsAny<string>())).Returns(mockClientProxy.Object);
+            mockClientProxy
+                .Setup(p => p.SendCoreAsync(It.IsAny<string>(), It.IsAny<object[]>(), default))
+                .Returns(Task.CompletedTask);
+            _hubContextMock.Setup(h => h.Clients).Returns(mockClients.Object);
+
             _service = new LoanApplicationService(
                 _repositoryMock.Object,
                 _loggerMock.Object,
-                _messagePublisherMock.Object);
+                _messagePublisherMock.Object,
+                _hubContextMock.Object);
         }
 
         // ─────────────────────────────────────────────────────────

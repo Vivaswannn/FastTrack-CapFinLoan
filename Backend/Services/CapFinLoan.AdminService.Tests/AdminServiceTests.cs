@@ -17,17 +17,21 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 
+// AuditLogDto is a record defined in IAuditLogService namespace
+using AuditLogDto = CapFinLoan.AdminService.Services.Interfaces.AuditLogDto;
+
 namespace CapFinLoan.AdminService.Tests
 {
     [TestFixture]
     public class AdminServiceTests
     {
-        private Mock<IDecisionRepository>          _repoMock        = null!;
-        private Mock<IApplicationHttpService>      _httpMock        = null!;
-        private Mock<ILogger<Services.AdminService>> _logMock       = null!;
-        private Mock<ICacheService>                _cacheMock       = null!;
-        private Mock<ILoanApprovedPublisher>        _publisherMock  = null!;
-        private Services.AdminService              _service         = null!;
+        private Mock<IDecisionRepository>            _repoMock        = null!;
+        private Mock<IApplicationHttpService>        _httpMock        = null!;
+        private Mock<ILogger<Services.AdminService>> _logMock         = null!;
+        private Mock<ICacheService>                  _cacheMock       = null!;
+        private Mock<ILoanApprovedPublisher>         _publisherMock   = null!;
+        private Mock<IAuditLogService>               _auditLogMock    = null!;
+        private Services.AdminService                _service         = null!;
 
         private readonly Guid   _appId      = Guid.NewGuid();
         private readonly Guid   _adminId    = Guid.NewGuid();
@@ -42,6 +46,7 @@ namespace CapFinLoan.AdminService.Tests
             _logMock       = new Mock<ILogger<Services.AdminService>>();
             _cacheMock     = new Mock<ICacheService>();
             _publisherMock = new Mock<ILoanApprovedPublisher>();
+            _auditLogMock  = new Mock<IAuditLogService>();
 
             // Default: cache miss (return null) so tests always hit service logic
             _cacheMock.Setup(c => c.GetAsync<DashboardStatsDto>(It.IsAny<string>()))
@@ -52,13 +57,19 @@ namespace CapFinLoan.AdminService.Tests
                       .Returns(Task.CompletedTask);
             _publisherMock.Setup(p => p.PublishLoanApprovedAsync(It.IsAny<LoanApprovedEvent>()))
                           .Returns(Task.CompletedTask);
+            _auditLogMock.Setup(a => a.LogAsync(
+                              It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(),
+                              It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(),
+                              It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                         .Returns(Task.CompletedTask);
 
             _service = new Services.AdminService(
                 _repoMock.Object,
                 _httpMock.Object,
                 _logMock.Object,
                 _cacheMock.Object,
-                _publisherMock.Object);
+                _publisherMock.Object,
+                _auditLogMock.Object);
         }
 
         // ── Helpers ──────────────────────────────────────────────────────────

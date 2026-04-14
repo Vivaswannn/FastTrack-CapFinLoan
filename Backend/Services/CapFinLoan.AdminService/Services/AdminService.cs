@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using CapFinLoan.AdminService.DTOs.Requests;
 using CapFinLoan.AdminService.DTOs.Responses;
 using CapFinLoan.AdminService.Helpers;
@@ -23,6 +24,7 @@ namespace CapFinLoan.AdminService.Services
         private readonly ILogger<AdminService> _logger;
         private readonly ICacheService _cacheService;
         private readonly ILoanApprovedPublisher _loanApprovedPublisher;
+        private readonly IAuditLogService _auditLogService;
 
         private const string DashboardStatsCacheKey = "dashboard:stats";
         private const string MonthlyTrendCacheKeyPrefix = "report:monthly:";
@@ -32,13 +34,15 @@ namespace CapFinLoan.AdminService.Services
             IApplicationHttpService applicationHttpService,
             ILogger<AdminService> logger,
             ICacheService cacheService,
-            ILoanApprovedPublisher loanApprovedPublisher)
+            ILoanApprovedPublisher loanApprovedPublisher,
+            IAuditLogService auditLogService)
         {
             _decisionRepository       = decisionRepository;
             _applicationHttpService   = applicationHttpService;
             _logger                   = logger;
             _cacheService             = cacheService;
             _loanApprovedPublisher    = loanApprovedPublisher;
+            _auditLogService          = auditLogService;
         }
 
         /// <inheritdoc/>
@@ -97,6 +101,24 @@ namespace CapFinLoan.AdminService.Services
             };
 
             var saved = await _decisionRepository.CreateAsync(decision);
+
+            // Audit log — record the decision for compliance
+            await _auditLogService.LogAsync(
+                entityType: "Decision",
+                entityId: applicationId,
+                action: dto.DecisionType,
+                performedBy: adminEmail,
+                performedByUserId: adminId,
+                newValues: JsonSerializer.Serialize(new
+                {
+                    saved.DecisionId,
+                    saved.DecisionType,
+                    saved.LoanAmountApproved,
+                    saved.InterestRate,
+                    saved.TenureMonths,
+                    saved.MonthlyEmi
+                }),
+                remarks: dto.Remarks);
 
             // Step 4: Update application status in ApplicationService
             var newStatus = dto.DecisionType == "Approved"

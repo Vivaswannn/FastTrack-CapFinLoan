@@ -1,5 +1,6 @@
 using CapFinLoan.ApplicationService.DTOs.Requests;
 using CapFinLoan.ApplicationService.DTOs.Responses;
+using CapFinLoan.ApplicationService.Hubs;
 using CapFinLoan.ApplicationService.Messaging;
 using CapFinLoan.ApplicationService.Models;
 using CapFinLoan.ApplicationService.Repositories.Interfaces;
@@ -8,6 +9,7 @@ using CapFinLoan.SharedKernel.DTOs;
 using CapFinLoan.SharedKernel.Enums;
 using CapFinLoan.SharedKernel.Events;
 using CapFinLoan.SharedKernel.Helpers;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace CapFinLoan.ApplicationService.Services
@@ -21,6 +23,7 @@ namespace CapFinLoan.ApplicationService.Services
         private readonly ILoanApplicationRepository _repository;
         private readonly ILogger<LoanApplicationService> _logger;
         private readonly IMessagePublisher _messagePublisher;
+        private readonly IHubContext<LoanStatusHub> _hubContext;
 
         /// <summary>
         /// Initializes a new instance of <see cref="LoanApplicationService"/>.
@@ -28,14 +31,17 @@ namespace CapFinLoan.ApplicationService.Services
         /// <param name="repository">The loan application repository.</param>
         /// <param name="logger">The logger instance.</param>
         /// <param name="messagePublisher">The RabbitMQ message publisher.</param>
+        /// <param name="hubContext">SignalR hub context for real-time push.</param>
         public LoanApplicationService(
             ILoanApplicationRepository repository,
             ILogger<LoanApplicationService> logger,
-            IMessagePublisher messagePublisher)
+            IMessagePublisher messagePublisher,
+            IHubContext<LoanStatusHub> hubContext)
         {
             _repository = repository;
             _logger = logger;
             _messagePublisher = messagePublisher;
+            _hubContext = hubContext;
         }
 
         /// <summary>
@@ -331,6 +337,23 @@ namespace CapFinLoan.ApplicationService.Services
             };
 
             await _repository.SaveOutboxMessageAsync(outboxMsg);
+
+            // Push real-time status update to all clients watching this application
+            await _hubContext.Clients
+                .Group(applicationId.ToString())
+                .SendAsync("StatusUpdated", new
+                {
+                    applicationId,
+                    oldStatus = fromStatus.ToString(),
+                    newStatus = toStatus.ToString(),
+                    changedBy = adminEmail,
+                    changedAt = DateTime.UtcNow,
+                    remarks   = dto.Remarks ?? string.Empty
+                });
+
+            _logger.LogInformation(
+                "SignalR push sent for ApplicationId={ApplicationId} → {NewStatus}",
+                applicationId, toStatus);
 
             return MapToResponseDto(updated);
         }
